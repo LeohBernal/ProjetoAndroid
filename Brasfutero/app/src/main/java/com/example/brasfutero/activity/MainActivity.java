@@ -17,29 +17,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bd = openOrCreateDatabase("banco5",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco8",MODE_PRIVATE,null);
         bd.execSQL("CREATE TABLE IF NOT EXISTS times(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, tecnico VARCHAR)");
-        bd.execSQL("CREATE TABLE IF NOT EXISTS jogadores(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, id_time INTEGER, idade INTEGER, posicao VARCHAR, nacionalidade VARCHAR, FOREIGN KEY (id_time) REFERENCES times(id))");
-        bd.execSQL("CREATE TABLE IF NOT EXISTS saves(id INTEGER PRIMARY KEY AUTOINCREMENT, id_time INTEGER, FOREIGN KEY (id_time) REFERENCES times(id))");
-        bd.execSQL("CREATE TABLE IF NOT EXISTS tabelas(id_save INTEGER, pontuacao INTEGER, id_time INTEGER, PRIMARY KEY (id_save, id_time), FOREIGN KEY (id_save) REFERENCES saves(id), FOREIGN KEY (id_time) REFERENCES times(id))");
+        bd.execSQL("CREATE TABLE IF NOT EXISTS jogadores(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, id_time INTEGER, idade INTEGER, posicao VARCHAR, nacionalidade VARCHAR, gols INTEGER, assistencia INTEGER, CA INTEGER, CV INTEGER, FOREIGN KEY (id_time) REFERENCES times(id))");
+        bd.execSQL("CREATE TABLE IF NOT EXISTS rodadas(id INTEGER PRIMARY KEY AUTOINCREMENT, rodada INTEGER)");
+        Cursor cursorRodadas = bd.rawQuery("SELECT * FROM rodadas",null);
         Cursor cursorTimes = bd.rawQuery("SELECT * FROM times",null);
         Cursor cursorJogadores = bd.rawQuery("SELECT * FROM jogadores",null);
-        System.out.println("TESTE A");
+
         if(!cursorTimes.moveToFirst())
             criarTimes();
         if(!cursorJogadores.moveToFirst())
             criarJogadores();
+        if(!cursorRodadas.moveToFirst())
+            bd.execSQL("INSERT INTO rodadas(rodada) VALUES ('0')");
     }
 
     public void novoJogo(View view){
         Intent intent = new Intent(this, inicio_jogo.class);
+        //intent.putExtra("view",1);
         startActivity(intent);
     }
-/*
+
     public void editorJogo(View view){
         Intent intent = new Intent(this, editor_jogo.class);
         startActivity(intent);
-    }*/
+    }
 
     public void criarTimes(){
         bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Santos','Sampaolli')");
@@ -66,30 +69,30 @@ public class MainActivity extends AppCompatActivity {
 
     public void criarJogadores(){
         // Santos
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Everson','1','28','GOL','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Lucas Verissimo','1','23','ZAG','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Felipe Aguilar','1','26','ZAG','Colombiano')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Victor Ferraz','1','31','LAT','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Jorge','1','23','LAT','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Alison','1','26','MEI','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Diego Pituca','1','26','MEI','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Jean Motta','1','25','MEI','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Marinho','1','29','ATA','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Sasha','1','27','ATA','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Soteldo','1','21','ATA','Venezuelano')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Everson','1','28','GOL','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Lucas Verissimo','1','23','ZAG','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Felipe Aguilar','1','26','ZAG','Colombiano','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Victor Ferraz','1','31','LAT','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Jorge','1','23','LAT','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Alison','1','26','MEI','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Diego Pituca','1','26','MEI','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Jean Motta','1','25','MEI','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Marinho','1','29','ATA','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Sasha','1','27','ATA','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Soteldo','1','21','ATA','Venezuelano','0','0','0','0')");
 
         // Palmeiras
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Weverton','2','20','GOL','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Antônio Carlos','2','20','ZAG','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Edu Dracena','2','20','ZAG','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Diego Barbosa','2','20','LAT','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Marcos Rocha','2','20','LAT','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Bruno Henrique','2','20','MEI','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Felipe Melo','2','20','MEI','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Lucas Lima','2','20','MEI','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Zé Rafael','2','20','ATA','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Dudu','2','20',''ATA','Brasileiro')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade) VALUES ('Deyverson','2','20','ATA','Brasileiro')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Weverton','2','20','GOL','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Antônio Carlos','2','20','ZAG','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Edu Dracena','2','20','ZAG','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Diego Barbosa','2','20','LAT','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Marcos Rocha','2','20','LAT','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Bruno Henrique','2','20','MEI','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Felipe Melo','2','20','MEI','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Lucas Lima','2','20','MEI','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Zé Rafael','2','20','ATA','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Dudu','2','20','ATA','Brasileiro','0','0','0','0')");
+        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Deyverson','2','20','ATA','Brasileiro','0','0','0','0')");
     }
 
 }

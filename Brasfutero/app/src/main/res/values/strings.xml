@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Brasfutero</string>
+    <string name="title_activity_editar_time">editar_time</string>
 </resources>

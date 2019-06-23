@@ -7,15 +7,18 @@ import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Adapter;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.content.Intent;
+import android.widget.Toast;
 
 import com.example.brasfutero.R;
 import com.example.brasfutero.adapter.adapterEscalacao;
 import com.example.brasfutero.model.Jogadores;
+import com.example.brasfutero.model.RecyclerItemClickListener;
 import com.example.brasfutero.model.Times;
 
 import java.util.ArrayList;
@@ -35,7 +38,7 @@ public class escalacao extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escalacao);
 
-        bd = openOrCreateDatabase("banco5",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco8",MODE_PRIVATE,null);
 
         nomeTime = findViewById(R.id.tvNomeTime);
         nomeTecnico = findViewById(R.id.tvNomeTecnico);
@@ -59,17 +62,21 @@ public class escalacao extends AppCompatActivity {
 
         // Carregar recycler view jogadores do time
         listaJogadores = findViewById(R.id.rvListaJogadores);
-        List<Jogadores> jogadores = new ArrayList<Jogadores>();
+
         cursorJogadores = bd.rawQuery("SELECT * FROM jogadores WHERE id_time='"+timeSelecionado+"'",null);
-        System.out.println("TAMANHO DO CURSOR:" + cursorJogadores.getCount());
         cursorJogadores.moveToFirst();
         if(cursorJogadores.moveToFirst()){
             do{
                 Jogadores jogador = new Jogadores();
+                jogador.setId(cursorJogadores.getInt(cursorJogadores.getColumnIndex("id")));
                 jogador.setIdade(cursorJogadores.getInt(cursorJogadores.getColumnIndex("idade")));
                 jogador.setNome(cursorJogadores.getString(cursorJogadores.getColumnIndex("nome")));
                 jogador.setNacionalidade(cursorJogadores.getString(cursorJogadores.getColumnIndex("nacionalidade")));
                 jogador.setPosicao(cursorJogadores.getString(cursorJogadores.getColumnIndex("posicao")));
+                jogador.setGols(cursorJogadores.getInt(cursorJogadores.getColumnIndex("gols")));
+                jogador.setAssistencia(cursorJogadores.getInt(cursorJogadores.getColumnIndex("assistencia")));
+                jogador.setCA(cursorJogadores.getInt(cursorJogadores.getColumnIndex("CA")));
+                jogador.setCV(cursorJogadores.getInt(cursorJogadores.getColumnIndex("CV")));
                 jogadores.add(jogador);
             } while (cursorJogadores.moveToNext());
         }
@@ -79,8 +86,38 @@ public class escalacao extends AppCompatActivity {
         listaJogadores.setHasFixedSize(true);
         listaJogadores.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         listaJogadores.setAdapter(adapter);
+
+        // Adicionando eventos de clique a partir de classe já estabelecida
+            listaJogadores.addOnItemTouchListener(
+                    new RecyclerItemClickListener(
+                            getApplicationContext(), listaJogadores, new RecyclerItemClickListener.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View view, int position) {
+                            int idJogador = jogadores.get(position).getId();
+                            editarJogador(view,idJogador);
+                        }
+
+                        @Override
+                        public void onLongItemClick(View view, int position) {
+                            Toast.makeText(getApplicationContext(), "Clique longo em " + jogadores.get(position).getNome(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        @Override
+                        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                        }
+                    }
+                    )
+            );
+
     }
 
+    public void editarJogador(View view, int idJogador){
+        Intent novaIntent = new Intent(this, editar_jogador.class);
+        novaIntent.putExtra("idJogador",idJogador);
+        novaIntent.putExtra("idTime",dados.getInt("idTime"));
+        startActivity(novaIntent);
+    }
 
     public void carregarEscudo(){
         int id = cursorTime.getInt(cursorTime.getColumnIndex("id"));

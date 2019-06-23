@@ -9,10 +9,10 @@
     <TextView
         android:id="@+id/tvNomeTime"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="43dp"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="4dp"
         android:text="Time"
         android:textSize="36sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,9 +22,9 @@
         android:id="@+id/tvNomeTecnico"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="65dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginLeft="2dp"
+        android:layout_marginTop="51dp"
         android:text="Técnico"
         android:textSize="24sp"
         app:layout_constraintStart_toEndOf="@+id/textview"
@@ -34,9 +34,9 @@
         android:id="@+id/ivTime"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@android:drawable/radiobutton_off_background" />
@@ -65,5 +65,21 @@
         android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvNomeTime" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Clique no jogador para editar seus números"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/ivTime"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textview" />
 
 </android.support.constraint.ConstraintLayout>

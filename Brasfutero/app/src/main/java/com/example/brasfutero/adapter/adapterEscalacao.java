@@ -37,6 +37,11 @@ public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyVi
         myViewHolder.posicao.setText(listaJogadores.get(i).getPosicao());
         myViewHolder.nacionalidade.setText(listaJogadores.get(i).getNacionalidade());
         myViewHolder.idade.setText(""+listaJogadores.get(i).getIdade());
+        myViewHolder.gol.setText(""+listaJogadores.get(i).getGols());
+        myViewHolder.assistencia.setText(""+listaJogadores.get(i).getAssistencia());
+        myViewHolder.CA.setText(""+listaJogadores.get(i).getCA());
+        myViewHolder.CV.setText(""+listaJogadores.get(i).getCV());
+
     }
 
     @Override
@@ -46,7 +51,7 @@ public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyVi
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         //cria elementos gráficos que estarão no modelo
-        TextView nome, posicao, nacionalidade, idade;
+        TextView nome, posicao, nacionalidade, idade, gol, assistencia, CA, CV;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -55,6 +60,11 @@ public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyVi
             posicao = itemView.findViewById(R.id.tvPosicao);
             nacionalidade = itemView.findViewById(R.id.tvNacionalidade);
             idade = itemView.findViewById(R.id.tvIdade);
+            gol = itemView.findViewById(R.id.tvGols);
+            assistencia = itemView.findViewById(R.id.tvAssistencias);
+            CA = itemView.findViewById(R.id.tvCA);
+            CV = itemView.findViewById(R.id.tvCV);
+
         }
     }
 

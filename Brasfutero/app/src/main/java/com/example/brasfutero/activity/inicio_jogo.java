@@ -25,13 +25,18 @@ public class inicio_jogo extends AppCompatActivity {
     private Times selecionado;
     private SQLiteDatabase bd;
     private Cursor cursorTimes, cursorSaves;
+    private Intent intent;
+    private Bundle dados;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.inicio_jogo);
-        bd = openOrCreateDatabase("banco5",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco8",MODE_PRIVATE,null);
         spinner = findViewById(R.id.spinner);
         iniciarJogo = findViewById(R.id.btnIniciarJogo);
+
+        intent = getIntent();
+        dados = intent.getExtras();
 
         cursorTimes = bd.rawQuery("SELECT * FROM times",null);
 
@@ -73,36 +78,16 @@ public class inicio_jogo extends AppCompatActivity {
         iniciarJogo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Inicia um novo jogando criando um save e gerando a tabela do save
-                    bd.execSQL("INSERT INTO saves(id_time) VALUES ('"+selecionado.getId()+"')");
-                    cursorSaves = bd.rawQuery("SELECT * FROM saves",null);
-                    gerarTabela();
-                    iniciarJogo(v);
+                    analisarJogadores(v);
             }
         });
 
     }
 
-    public void iniciarJogo(View view){
+    public void analisarJogadores(View view){
         Intent intent = new Intent(this, escalacao.class);
         intent.putExtra("idTime",selecionado.getId());
         startActivity(intent);
-    }
-
-    public void gerarTabela(){
-        // Volta o cursor dos times para o inicio para inserir na tabela
-        // Pega o último save (o criado ao iniciar no jogo) e insere na tabela
-        // Insere todos times na tabela com 0 pontos
-        if(cursorTimes.moveToFirst()) {
-            int id, id_save;
-            cursorSaves.moveToLast();
-            id_save = cursorSaves.getInt(cursorTimes.getColumnIndex("id"));
-            do {
-                id = cursorTimes.getInt(cursorTimes.getColumnIndex("id"));
-                System.out.println("VALOR SAVE: "+id_save+"|| VALOR ID: "+id);
-                bd.execSQL("INSERT INTO tabelas(id_save, id_time, pontuacao) VALUES ('"+id_save+"','"+id+"','0')");
-            } while (cursorTimes.moveToNext());
-        }
     }
 
 }
