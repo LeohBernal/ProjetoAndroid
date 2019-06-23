@@ -80,7 +80,7 @@ public class escalacao extends AppCompatActivity {
                 jogadores.add(jogador);
             } while (cursorJogadores.moveToNext());
         }
-        adapterEscalacao adapter = new adapterEscalacao(jogadores);
+        adapterEscalacao adapter = new adapterEscalacao(jogadores,dados.getInt("numeroRodadas"));
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         listaJogadores.setLayoutManager(layoutManager);
         listaJogadores.setHasFixedSize(true);

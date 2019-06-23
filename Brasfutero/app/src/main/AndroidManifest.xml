@@ -10,15 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activity.editar_jogador"></activity>
-        <activity android:name=".activity.novo_time" />
         <activity android:name=".activity.escalacao" />
-        <activity
-            android:name=".activity.editor_jogo"
-            android:parentActivityName=".activity.MainActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
-        </activity>
         <activity
             android:name=".activity.inicio_jogo"
             android:parentActivityName=".activity.MainActivity">

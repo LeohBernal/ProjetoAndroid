@@ -6,6 +6,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.example.brasfutero.R;
 
@@ -13,6 +16,9 @@ import java.sql.SQLOutput;
 
 public class MainActivity extends AppCompatActivity {
     private SQLiteDatabase bd;
+    private Button rodada;
+    private EditText numRodadas;
+    private Cursor cursorRodadas;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
         bd.execSQL("CREATE TABLE IF NOT EXISTS times(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, tecnico VARCHAR)");
         bd.execSQL("CREATE TABLE IF NOT EXISTS jogadores(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, id_time INTEGER, idade INTEGER, posicao VARCHAR, nacionalidade VARCHAR, gols INTEGER, assistencia INTEGER, CA INTEGER, CV INTEGER, FOREIGN KEY (id_time) REFERENCES times(id))");
         bd.execSQL("CREATE TABLE IF NOT EXISTS rodadas(id INTEGER PRIMARY KEY AUTOINCREMENT, rodada INTEGER)");
-        Cursor cursorRodadas = bd.rawQuery("SELECT * FROM rodadas",null);
+        cursorRodadas = bd.rawQuery("SELECT * FROM rodadas",null);
         Cursor cursorTimes = bd.rawQuery("SELECT * FROM times",null);
         Cursor cursorJogadores = bd.rawQuery("SELECT * FROM jogadores",null);
 
@@ -31,16 +37,33 @@ public class MainActivity extends AppCompatActivity {
             criarJogadores();
         if(!cursorRodadas.moveToFirst())
             bd.execSQL("INSERT INTO rodadas(rodada) VALUES ('0')");
+
+        rodada = findViewById(R.id.btnAtualizarNumRodadas);
+        numRodadas = findViewById(R.id.etNumRodadas);
+
+        numRodadas.setText(""+cursorRodadas.getInt(cursorRodadas.getColumnIndex("rodada")));
+
+        rodada.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int numeroRodadasInteiro;
+                String numeroRodadas;
+                numeroRodadas = numRodadas.getText().toString();
+                numeroRodadasInteiro = Integer.parseInt(numeroRodadas);
+                if(numeroRodadasInteiro > 0 && numeroRodadasInteiro < 38){
+                    bd.execSQL("UPDATE rodadas SET rodada = '"+numeroRodadas+"'");
+                    Toast.makeText(getApplicationContext(),"Número de rodadas atualizado!",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getApplicationContext(),"Número de rodadas é invalido!",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     public void novoJogo(View view){
         Intent intent = new Intent(this, inicio_jogo.class);
-        //intent.putExtra("view",1);
-        startActivity(intent);
-    }
-
-    public void editorJogo(View view){
-        Intent intent = new Intent(this, editor_jogo.class);
+        intent.putExtra("numeroRodadas",cursorRodadas.getInt(cursorRodadas.getColumnIndex("rodada")));
         startActivity(intent);
     }
 

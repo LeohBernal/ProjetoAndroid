@@ -15,12 +15,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyViewHolder>{
+    private int numeroRodadas;
     private List<Jogadores> listaJogadores;
-    private SQLiteDatabase bd;
 
-    public adapterEscalacao(List<Jogadores> listaJogadores){
+    public adapterEscalacao(List<Jogadores> listaJogadores, int numeroRodadas){
         this.listaJogadores = new ArrayList<Jogadores>();
         this.listaJogadores = listaJogadores;
+        this.numeroRodadas = numeroRodadas;
     }
 
 
@@ -33,6 +34,12 @@ public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyVi
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
+        double mediaGols, mediaAssist, mediaCA, mediaCV;
+        System.out.println("NUMERO DE RODADAS: "+numeroRodadas);
+        mediaGols = (double) listaJogadores.get(i).getGols()/ (double) numeroRodadas;
+        mediaAssist = (double) listaJogadores.get(i).getAssistencia() / (double) numeroRodadas;
+        mediaCA = (double) listaJogadores.get(i).getCA() / (double) numeroRodadas;
+        mediaCV = (double) listaJogadores.get(i).getCV() / (double) numeroRodadas;
         myViewHolder.nome.setText(listaJogadores.get(i).getNome());
         myViewHolder.posicao.setText(listaJogadores.get(i).getPosicao());
         myViewHolder.nacionalidade.setText(listaJogadores.get(i).getNacionalidade());
@@ -41,7 +48,10 @@ public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyVi
         myViewHolder.assistencia.setText(""+listaJogadores.get(i).getAssistencia());
         myViewHolder.CA.setText(""+listaJogadores.get(i).getCA());
         myViewHolder.CV.setText(""+listaJogadores.get(i).getCV());
-
+        myViewHolder.mediaGol.setText(""+((mediaGols == 0)?((int) mediaGols):(mediaGols)));
+        myViewHolder.mediaAssist.setText(""+((mediaAssist == 0)?((int) mediaAssist):(mediaAssist)));
+        myViewHolder.mediaCA.setText(""+((mediaCA == 0)?((int) mediaCA):(mediaCA)));
+        myViewHolder.mediaCV.setText(""+((mediaCV == 0)?((int) mediaCV):(mediaCV)));
     }
 
     @Override
@@ -52,6 +62,7 @@ public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyVi
     public class MyViewHolder extends RecyclerView.ViewHolder{
         //cria elementos gráficos que estarão no modelo
         TextView nome, posicao, nacionalidade, idade, gol, assistencia, CA, CV;
+        TextView mediaGol, mediaAssist, mediaCA, mediaCV;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -64,7 +75,10 @@ public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyVi
             assistencia = itemView.findViewById(R.id.tvAssistencias);
             CA = itemView.findViewById(R.id.tvCA);
             CV = itemView.findViewById(R.id.tvCV);
-
+            mediaGol = itemView.findViewById(R.id.tvMediaGols);
+            mediaAssist = itemView.findViewById(R.id.tvMediaAssist);
+            mediaCA = itemView.findViewById(R.id.tvMediaCA);
+            mediaCV = itemView.findViewById(R.id.tvMediaCV);
         }
     }
 

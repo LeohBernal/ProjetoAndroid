@@ -6,6 +6,7 @@ public class Times {
     private String nome;
     private String tecnico;
     private int id;
+    private int escudo;
 
     public Times(String nome, String tecnico, int id){
         this.nome = nome;
