@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.brasfutero.R;
 import com.example.brasfutero.model.Times;
@@ -42,11 +43,11 @@ public class editar_time extends AppCompatActivity {
         minusVit = findViewById(R.id.ivMinusVit);
         minusDerrota = findViewById(R.id.ivMInusDerrota);
         minusEmpate = findViewById(R.id.ivMinusEmpate);
-        vitoria = findViewById(R.id.tvEdicNumVit);
-        derrota = findViewById(R.id.tvEdicNumDer);
-        empate = findViewById(R.id.tvEdicNumEmp);
+        vitoria = findViewById(R.id.tvEdicNumAssist);
+        derrota = findViewById(R.id.tvEdicNumCA);
+        empate = findViewById(R.id.tvEdicNumCV);
         save = findViewById(R.id.ivSalvarTIme);
-        cancel = findViewById(R.id.ivCancelarTime);
+        cancel = findViewById(R.id.ivCancelarJogador);
 
         // Selecionar o time escolhido
         cursorTime = bd.rawQuery("SELECT * FROM times WHERE id='"+timeSelecionado+"'",null);
@@ -115,8 +116,12 @@ public class editar_time extends AppCompatActivity {
                 vit = Integer.parseInt(vitoria.getText().toString());
                 der = Integer.parseInt(derrota.getText().toString());
                 emp = Integer.parseInt(empate.getText().toString());
-                bd.execSQL("UPDATE times SET vitoria = '"+vit+"', derrota = '"+der+"', empate = '"+emp+"' WHERE id = '"+timeSelecionado+"'");
-                voltarTimes();
+                if(vit+der+emp == numeroRodadas){
+                    bd.execSQL("UPDATE times SET vitoria = '"+vit+"', derrota = '"+der+"', empate = '"+emp+"' WHERE id = '"+timeSelecionado+"'");
+                    voltarTimes();
+                } else {
+                    Toast.makeText(getApplicationContext(),"Número de vitóras + empates + derrotas deve ser igual o número de rodadas ("+numeroRodadas+")!",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -176,9 +181,7 @@ public class editar_time extends AppCompatActivity {
     }
 
     public void voltarTimes(){
-        Intent intent = new Intent(this, inicio_jogo.class);
-        intent.putExtra("numeroRodadas",numeroRodadas);
-        startActivity(intent);
+        finish();
     }
 
     public void carregarEscudo(){

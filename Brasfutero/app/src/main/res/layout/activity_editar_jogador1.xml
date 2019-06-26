@@ -6,8 +6,60 @@
     android:layout_height="match_parent"
     tools:context=".activity.editar_time">
 
+    <TextView
+        android:id="@+id/tvEdicNumGols"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="20"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView6" />
+
     <ImageView
-        android:id="@+id/ivPlusEmpate"
+        android:id="@+id/ivPlusGols"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintStart_toEndOf="@+id/tvEdicNumGols"
+        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        app:srcCompat="@drawable/plus" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="Gols"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView7" />
+
+    <ImageView
+        android:id="@+id/ivMinusGols"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginRight="12dp"
+        app:layout_constraintEnd_toStartOf="@+id/tvEdicNumGols"
+        app:layout_constraintTop_toBottomOf="@+id/textView6"
+        app:srcCompat="@drawable/minus" />
+
+    <ImageView
+        android:id="@+id/ivPlusCV"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="8dp"
@@ -18,7 +70,7 @@
         app:srcCompat="@drawable/plus" />
 
     <ImageView
-        android:id="@+id/ivPlusDerrota"
+        android:id="@+id/ivPlusCA"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="8dp"
@@ -29,7 +81,7 @@
         app:srcCompat="@drawable/plus" />
 
     <ImageView
-        android:id="@+id/ivMinusEmpate"
+        android:id="@+id/ivMinusCV"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginTop="12dp"
@@ -40,7 +92,7 @@
         app:srcCompat="@drawable/minus" />
 
     <ImageView
-        android:id="@+id/ivMInusDerrota"
+        android:id="@+id/ivMInusCA"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginTop="12dp"
@@ -74,7 +126,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="Empates"
+        android:text="Cartões Vermelhos"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -89,7 +141,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="Derrotas"
+        android:text="Cartões Amarelos"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -116,14 +168,14 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:text="Vitórias"
+        android:text="Assistências"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivEscudoTimeEdicao" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEdicNumGols" />
 
     <TextView
         android:id="@+id/tvEdicNumAssist"
@@ -141,7 +193,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView5" />
 
     <ImageView
-        android:id="@+id/ivMinusVit"
+        android:id="@+id/ivMinusAssist"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginTop="12dp"
@@ -152,7 +204,7 @@
         app:srcCompat="@drawable/minus" />
 
     <ImageView
-        android:id="@+id/ivPlusVit"
+        android:id="@+id/ivPlusAssist"
         android:layout_width="25dp"
         android:layout_height="25dp"
         android:layout_marginStart="8dp"
@@ -161,21 +213,6 @@
         app:layout_constraintStart_toEndOf="@+id/tvEdicNumAssist"
         app:layout_constraintTop_toBottomOf="@+id/textView5"
         app:srcCompat="@drawable/plus" />
-
-    <TextView
-        android:id="@+id/textView26"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="28dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="8dp"
-        android:text="Edição da equipe"
-        android:textSize="36sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/ivCancelarJogador"
@@ -192,7 +229,7 @@
         app:srcCompat="@drawable/cancel" />
 
     <ImageView
-        android:id="@+id/ivSalvarTIme"
+        android:id="@+id/ivSalvarJogador"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:layout_marginStart="8dp"
@@ -209,19 +246,34 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/save" />
 
-    <ImageView
-        android:id="@+id/ivEscudoTimeEdicao"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+    <TextView
+        android:id="@+id/tvEdicNomeJogador"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+        android:text="EVERSON"
+        android:textSize="30sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView7"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView26"
-        app:srcCompat="@drawable/santos" />
+        app:layout_constraintTop_toBottomOf="@+id/tvEdicNomeJogador"
+        app:srcCompat="@drawable/edituser1" />
 
 </android.support.constraint.ConstraintLayout>

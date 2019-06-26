@@ -66,6 +66,12 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("numeroRodadas",cursorRodadas.getInt(cursorRodadas.getColumnIndex("rodada")));
         startActivity(intent);
     }
+
+    @Override
+    public void onBackPressed()
+    {
+        finish();
+    }
     
     public void criarTimes(){
         bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Santos','Sampaolli','0','0','0')");

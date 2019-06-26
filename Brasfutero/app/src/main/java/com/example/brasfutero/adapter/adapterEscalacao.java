@@ -48,10 +48,10 @@ public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyVi
         myViewHolder.assistencia.setText(""+listaJogadores.get(i).getAssistencia());
         myViewHolder.CA.setText(""+listaJogadores.get(i).getCA());
         myViewHolder.CV.setText(""+listaJogadores.get(i).getCV());
-        myViewHolder.mediaGol.setText(""+((mediaGols == 0)?((int) mediaGols):(mediaGols)));
-        myViewHolder.mediaAssist.setText(""+((mediaAssist == 0)?((int) mediaAssist):(mediaAssist)));
-        myViewHolder.mediaCA.setText(""+((mediaCA == 0)?((int) mediaCA):(mediaCA)));
-        myViewHolder.mediaCV.setText(""+((mediaCV == 0)?((int) mediaCV):(mediaCV)));
+        myViewHolder.mediaGol.setText(""+String.format("%.2f", mediaGols));
+        myViewHolder.mediaAssist.setText(""+String.format("%.2f", mediaAssist));
+        myViewHolder.mediaCA.setText(""+(String.format("%.2f", mediaCA)));
+        myViewHolder.mediaCV.setText(""+(String.format("%.2f", mediaCV)));
     }
 
     @Override

@@ -111,11 +111,20 @@ public class escalacao extends AppCompatActivity {
             );
 
     }
+/*
+    @Override
+    public void onBackPressed()
+    {
+        Intent novaIntent = new Intent(this, inicio_jogo.class);
+        novaIntent.putExtra("numeroRodadas",dados.getInt("numeroRodadas"));
+        startActivity(intent);
+    }*/
 
     public void editarJogador(View view, int idJogador){
         Intent novaIntent = new Intent(this, editar_jogador.class);
         novaIntent.putExtra("idJogador",idJogador);
         novaIntent.putExtra("idTime",dados.getInt("idTime"));
+        novaIntent.putExtra("numeroRodadas",dados.getInt("numeroRodadas"));
         startActivity(novaIntent);
     }
 

@@ -56,8 +56,6 @@ public class inicio_jogo extends AppCompatActivity {
         
         // Carregar recycler view jogadores do time
         listaTimes = findViewById(R.id.rvTimes);
-
-        System.out.println("TESTE NUM RODADAS: "+dados.getInt("numeroRodadas"));
         
         adapterTimes adapter = new adapterTimes(times, dados.getInt("numeroRodadas"), this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -89,13 +87,6 @@ public class inicio_jogo extends AppCompatActivity {
                 )
         );*/
 
-    }
-
-    public void analisarJogadores(View view, int idTime){
-        Intent intent = new Intent(this, escalacao.class);
-        intent.putExtra("idTime",idTime);
-        intent.putExtra("numeroRodadas",dados.getInt("numeroRodadas"));
-        startActivity(intent);
     }
 
 }
