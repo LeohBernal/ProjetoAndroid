@@ -1,5 +1,8 @@
 package com.example.brasfutero.adapter;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -7,8 +10,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.example.brasfutero.R;
+import com.example.brasfutero.activity.escalacao;
 import com.example.brasfutero.model.Times;
 
 import java.util.ArrayList;
@@ -16,10 +21,13 @@ import java.util.List;
 
 public class adapterTimes extends RecyclerView.Adapter<adapterTimes.MyViewHolder>{
     private List<Times> listaTimes;
-    private SQLiteDatabase bd;
-    public adapterTimes(List<Times> listaTimes){
+    private int numeroRodadas;
+    private Activity activity;
+    public adapterTimes(List<Times> listaTimes, int numeroRodadas, Activity activity){
         this.listaTimes = new ArrayList<Times>();
         this.listaTimes = listaTimes;
+        this.numeroRodadas = numeroRodadas;
+        this.activity = activity;
     }
 
 
@@ -31,10 +39,21 @@ public class adapterTimes extends RecyclerView.Adapter<adapterTimes.MyViewHolder
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
+    public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, final int i) {
         myViewHolder.nome.setText(listaTimes.get(i).getNome());
         myViewHolder.tecnico.setText(listaTimes.get(i).getTecnico());
         carregarEscudo(myViewHolder,listaTimes.get(i).getId());
+
+        myViewHolder.jogadores.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, escalacao.class);
+                intent.putExtra("idTime", listaTimes.get(i).getId());
+                intent.putExtra("numeroRodadas",numeroRodadas);
+                activity.startActivity(intent);
+            }
+        });
+
     }
 
     @Override
@@ -44,15 +63,23 @@ public class adapterTimes extends RecyclerView.Adapter<adapterTimes.MyViewHolder
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         //cria elementos gráficos que estarão no modelo
-        TextView nome, tecnico;
+        TextView nome, tecnico, vitoria, derrota, empate, aproveitamento;
         ImageView escudo;
+        LinearLayout jogadores, editarTime;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
 
             nome = itemView.findViewById(R.id.tvNomeTime);
             tecnico = itemView.findViewById(R.id.tvNomeTecnico);
+            tecnico = itemView.findViewById(R.id.tvNomeTecnico);
+            vitoria = itemView.findViewById(R.id.tvNumVit);
+            derrota = itemView.findViewById(R.id.tvNumDerrota);
+            empate = itemView.findViewById(R.id.tvNumEmpate);
+            aproveitamento = itemView.findViewById(R.id.tvNumAproveit);
             escudo = itemView.findViewById(R.id.ivTimeSelecao);
+            jogadores = itemView.findViewById(R.id.llVerificarJogador);
+            editarTime = itemView.findViewById(R.id.llEditarTime);
 
         }
     }

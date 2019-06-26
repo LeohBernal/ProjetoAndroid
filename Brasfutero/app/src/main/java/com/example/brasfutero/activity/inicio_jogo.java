@@ -50,43 +50,17 @@ public class inicio_jogo extends AppCompatActivity {
                 times.add(time);
             } while (cursorTimes.moveToNext());
         }
-        /*
-        System.out.println("TESTE 3");
-
-        ArrayAdapter<Times> dataAdapter;
-        dataAdapter = new ArrayAdapter<>(this,android.R.layout.simple_spinner_dropdown_item, times);
-
-        spinner.setAdapter(dataAdapter);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                    selecionado = (Times) spinner.getSelectedItem();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                // nothing
-            }
-        });
-
-        iniciarJogo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                    analisarJogadores(v);
-            }
-        });*/
         
         // Carregar recycler view jogadores do time
         listaTimes = findViewById(R.id.rvTimes);
         
-        adapterTimes adapter = new adapterTimes(times);
+        adapterTimes adapter = new adapterTimes(times, dados.getInt("numeroRodadas"), this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         listaTimes.setLayoutManager(layoutManager);
         listaTimes.setHasFixedSize(true);
         listaTimes.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         listaTimes.setAdapter(adapter);
-
+/*
         // Adicionando eventos de clique a partir de classe já estabelecida
         listaTimes.addOnItemTouchListener(
                 new RecyclerItemClickListener(
@@ -108,7 +82,7 @@ public class inicio_jogo extends AppCompatActivity {
                     }
                 }
                 )
-        );
+        );*/
 
     }
 
