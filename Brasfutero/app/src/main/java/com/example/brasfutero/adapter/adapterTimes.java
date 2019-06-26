@@ -14,6 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import com.example.brasfutero.R;
 import com.example.brasfutero.activity.escalacao;
+import com.example.brasfutero.activity.editar_time;
 import com.example.brasfutero.model.Times;
 
 import java.util.ArrayList;
@@ -40,14 +41,31 @@ public class adapterTimes extends RecyclerView.Adapter<adapterTimes.MyViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, final int i) {
+        double aproveitamento, pontosTotais;
+        pontosTotais = numeroRodadas*3;
+        aproveitamento = ((listaTimes.get(i).getVitoria()*3+listaTimes.get(i).getEmpate())/pontosTotais)*100;
         myViewHolder.nome.setText(listaTimes.get(i).getNome());
         myViewHolder.tecnico.setText(listaTimes.get(i).getTecnico());
+        myViewHolder.vitoria.setText(listaTimes.get(i).getVitoria()+"");
+        myViewHolder.derrota.setText(listaTimes.get(i).getDerrota()+"");
+        myViewHolder.empate.setText(listaTimes.get(i).getEmpate()+"");
+        myViewHolder.aproveitamento.setText(String.format("%.2f", aproveitamento)+" %");
         carregarEscudo(myViewHolder,listaTimes.get(i).getId());
 
         myViewHolder.jogadores.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, escalacao.class);
+                intent.putExtra("idTime", listaTimes.get(i).getId());
+                intent.putExtra("numeroRodadas",numeroRodadas);
+                activity.startActivity(intent);
+            }
+        });
+
+        myViewHolder.editarTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, editar_time.class);
                 intent.putExtra("idTime", listaTimes.get(i).getId());
                 intent.putExtra("numeroRodadas",numeroRodadas);
                 activity.startActivity(intent);

@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.editar_jogador"></activity>
+        <activity android:name=".activity.editar_time"></activity>
+        <activity android:name=".activity.editar_jogador" />
         <activity android:name=".activity.escalacao" />
         <activity
             android:name=".activity.inicio_jogo"

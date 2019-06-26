@@ -26,7 +26,7 @@ public class editar_jogador extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_jogador);
-        bd = openOrCreateDatabase("banco8",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco9",MODE_PRIVATE,null);
 
         intent = getIntent();
         dados = intent.getExtras();

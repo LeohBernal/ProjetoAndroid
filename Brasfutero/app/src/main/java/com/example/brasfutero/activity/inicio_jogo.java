@@ -34,7 +34,7 @@ public class inicio_jogo extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.inicio_jogo);
-        bd = openOrCreateDatabase("banco8",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco9",MODE_PRIVATE,null);
 
         intent = getIntent();
         dados = intent.getExtras();
@@ -47,12 +47,17 @@ public class inicio_jogo extends AppCompatActivity {
                 time.setId(cursorTimes.getInt(cursorTimes.getColumnIndex("id")));
                 time.setNome(cursorTimes.getString(cursorTimes.getColumnIndex("nome")));
                 time.setTecnico(cursorTimes.getString(cursorTimes.getColumnIndex("tecnico")));
+                time.setVitoria(cursorTimes.getInt(cursorTimes.getColumnIndex("vitoria")));
+                time.setDerrota(cursorTimes.getInt(cursorTimes.getColumnIndex("derrota")));
+                time.setEmpate(cursorTimes.getInt(cursorTimes.getColumnIndex("empate")));
                 times.add(time);
             } while (cursorTimes.moveToNext());
         }
         
         // Carregar recycler view jogadores do time
         listaTimes = findViewById(R.id.rvTimes);
+
+        System.out.println("TESTE NUM RODADAS: "+dados.getInt("numeroRodadas"));
         
         adapterTimes adapter = new adapterTimes(times, dados.getInt("numeroRodadas"), this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());

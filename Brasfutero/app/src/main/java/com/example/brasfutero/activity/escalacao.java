@@ -38,7 +38,7 @@ public class escalacao extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escalacao);
 
-        bd = openOrCreateDatabase("banco8",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco9",MODE_PRIVATE,null);
 
         nomeTime = findViewById(R.id.tvNomeTime);
         nomeTecnico = findViewById(R.id.tvNomeTecnico);

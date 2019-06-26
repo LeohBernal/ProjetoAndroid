@@ -23,8 +23,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bd = openOrCreateDatabase("banco8",MODE_PRIVATE,null);
-        bd.execSQL("CREATE TABLE IF NOT EXISTS times(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, tecnico VARCHAR)");
+        bd = openOrCreateDatabase("banco9",MODE_PRIVATE,null);
+        bd.execSQL("CREATE TABLE IF NOT EXISTS times(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, tecnico VARCHAR, vitoria INTEGER, derrota INTEGER, empate INTEGER)");
         bd.execSQL("CREATE TABLE IF NOT EXISTS jogadores(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, id_time INTEGER, idade INTEGER, posicao VARCHAR, nacionalidade VARCHAR, gols INTEGER, assistencia INTEGER, CA INTEGER, CV INTEGER, FOREIGN KEY (id_time) REFERENCES times(id))");
         bd.execSQL("CREATE TABLE IF NOT EXISTS rodadas(id INTEGER PRIMARY KEY AUTOINCREMENT, rodada INTEGER)");
         cursorRodadas = bd.rawQuery("SELECT * FROM rodadas",null);
@@ -66,28 +66,28 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("numeroRodadas",cursorRodadas.getInt(cursorRodadas.getColumnIndex("rodada")));
         startActivity(intent);
     }
-
+    
     public void criarTimes(){
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Santos','Sampaolli')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Palmeiras','Felipão')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Corinthians','Carille')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('São Paulo','Cuca')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Flamengo','Jorge Jesus')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Fluminense','Fernando Diniz')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Vasco','Luxemburgo')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Botafogo','Eduardo Barroca ')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Cruzeiro','Mano Menezes')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Atlético-MG','Rodrigo Santana')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Internacional','Odair Hellmann')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Grêmio','Renato Gaúcho')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Bahia','Roger Machado')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Ceará','Enderson Moreira')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Fortaleza','Rogério Ceni')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Athtletico-PR','Tiago Nunes')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Goiás','Claudinei Oliveira')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Chapecoense','Ney Franco')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('Avaí','Geninho')");
-        bd.execSQL("INSERT INTO times(nome,tecnico) VALUES ('CSA','Marcelo Cabo')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Santos','Sampaolli','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Palmeiras','Felipão','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Corinthians','Carille','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('São Paulo','Cuca','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Flamengo','Jorge Jesus','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Fluminense','Fernando Diniz','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Vasco','Luxemburgo','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Botafogo','Eduardo Barroca ','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Cruzeiro','Mano Menezes','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Atlético-MG','Rodrigo Santana','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Internacional','Odair Hellmann','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Grêmio','Renato Gaúcho','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Bahia','Roger Machado','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Ceará','Enderson Moreira','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Fortaleza','Rogério Ceni','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Athtletico-PR','Tiago Nunes','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Goiás','Claudinei Oliveira','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Chapecoense','Ney Franco','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Avaí','Geninho','0','0','0')");
+        bd.execSQL("INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('CSA','Marcelo Cabo','0','0','0')");
     }
 
     public void criarJogadores(){
