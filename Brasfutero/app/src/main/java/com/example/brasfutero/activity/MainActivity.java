@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.brasfutero.R;
@@ -17,13 +19,14 @@ import java.sql.SQLOutput;
 public class MainActivity extends AppCompatActivity {
     private SQLiteDatabase bd;
     private Button rodada;
-    private EditText numRodadas;
+    private TextView numRodadas;
     private Cursor cursorRodadas;
+    private ImageView save, plus, minus;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bd = openOrCreateDatabase("banco9",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco10",MODE_PRIVATE,null);
         bd.execSQL("CREATE TABLE IF NOT EXISTS times(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, tecnico VARCHAR, vitoria INTEGER, derrota INTEGER, empate INTEGER)");
         bd.execSQL("CREATE TABLE IF NOT EXISTS jogadores(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, id_time INTEGER, idade INTEGER, posicao VARCHAR, nacionalidade VARCHAR, gols INTEGER, assistencia INTEGER, CA INTEGER, CV INTEGER, FOREIGN KEY (id_time) REFERENCES times(id))");
         bd.execSQL("CREATE TABLE IF NOT EXISTS rodadas(id INTEGER PRIMARY KEY AUTOINCREMENT, rodada INTEGER)");
@@ -38,24 +41,35 @@ public class MainActivity extends AppCompatActivity {
         if(!cursorRodadas.moveToFirst())
             bd.execSQL("INSERT INTO rodadas(rodada) VALUES ('0')");
 
-        rodada = findViewById(R.id.btnAtualizarNumRodadas);
-        numRodadas = findViewById(R.id.etNumRodadas);
+        cursorRodadas.moveToFirst();
+
+        save = findViewById(R.id.ivSaveNumRod);
+        plus = findViewById(R.id.ivPlusRodada);
+        minus = findViewById(R.id.ivMinusRodada);
+        numRodadas = findViewById(R.id.tvNumRodada);
 
         numRodadas.setText(""+cursorRodadas.getInt(cursorRodadas.getColumnIndex("rodada")));
 
-        rodada.setOnClickListener(new View.OnClickListener() {
+        plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int numeroRodadasInteiro;
-                String numeroRodadas;
-                numeroRodadas = numRodadas.getText().toString();
-                numeroRodadasInteiro = Integer.parseInt(numeroRodadas);
-                if(numeroRodadasInteiro > 0 && numeroRodadasInteiro < 38){
-                    bd.execSQL("UPDATE rodadas SET rodada = '"+numeroRodadas+"'");
-                    Toast.makeText(getApplicationContext(),"Número de rodadas atualizado!",Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getApplicationContext(),"Número de rodadas é invalido!",Toast.LENGTH_SHORT).show();
-                }
+                numRodadas(1);
+            }
+        });
+
+        minus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                numRodadas(2);
+            }
+        });
+
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int numeroRodadasInteiro = Integer.parseInt(numRodadas.getText().toString());
+                bd.execSQL("UPDATE rodadas SET rodada = '"+numeroRodadasInteiro+"'");
+                Toast.makeText(getApplicationContext(),"Número de rodadas atualizado!",Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -63,8 +77,25 @@ public class MainActivity extends AppCompatActivity {
 
     public void novoJogo(View view){
         Intent intent = new Intent(this, inicio_jogo.class);
+        cursorRodadas.moveToFirst();
         intent.putExtra("numeroRodadas",cursorRodadas.getInt(cursorRodadas.getColumnIndex("rodada")));
         startActivity(intent);
+    }
+
+    public void numRodadas(int check){
+        int numeroRodadasInteiro;
+        numeroRodadasInteiro = Integer.parseInt(numRodadas.getText().toString());
+        if(check == 1){
+            if(numeroRodadasInteiro < 38) {
+                numeroRodadasInteiro++;
+                numRodadas.setText(numeroRodadasInteiro+"");
+            }
+        } else if (check == 2){
+            if(numeroRodadasInteiro > 0) {
+                numeroRodadasInteiro--;
+                numRodadas.setText(numeroRodadasInteiro+"");
+            }
+        }
     }
 
     @Override

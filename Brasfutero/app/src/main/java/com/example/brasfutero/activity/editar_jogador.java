@@ -24,7 +24,7 @@ public class editar_jogador extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_jogador1);
-        bd = openOrCreateDatabase("banco9",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco10",MODE_PRIVATE,null);
 
         intent = getIntent();
         dados = intent.getExtras();
@@ -126,14 +126,14 @@ public class editar_jogador extends AppCompatActivity {
                 CAs = CA.getText().toString();
                 CVs = CV.getText().toString();
                 bd.execSQL("UPDATE jogadores SET gols = '"+gol+"', assistencia = '"+assistencia+"', CA = '"+CAs+"', CV = '"+CVs+"' WHERE id = '"+dados.getInt("idJogador")+"'");
-                retornarEscalacao(v);
+                retornarEscalacao(v,1);
             }
         });
 
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                retornarEscalacao(v);
+                retornarEscalacao(v,0);
             }
         });
 
@@ -194,7 +194,12 @@ public class editar_jogador extends AppCompatActivity {
     }
 
 
-    public void retornarEscalacao(View view){
+    public void retornarEscalacao(View view, int check){
+        Intent intent = new Intent(this,escalacao.class);
+        intent.putExtra("numeroRodadas",dados.getInt("numeroRodadas"));
+        if(check == 1)
+            intent.putExtra("edicaoJogador",1);
+        startActivity(intent);
         finish();
     }
 

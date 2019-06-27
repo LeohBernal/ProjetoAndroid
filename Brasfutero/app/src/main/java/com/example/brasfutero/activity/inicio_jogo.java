@@ -34,10 +34,16 @@ public class inicio_jogo extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.inicio_jogo);
-        bd = openOrCreateDatabase("banco9",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco10",MODE_PRIVATE,null);
 
         intent = getIntent();
         dados = intent.getExtras();
+
+        if(intent.hasExtra("edicaoTime")){
+            if(dados.getInt("edicaoTime") == 1)
+                Toast.makeText(getApplicationContext(),"Time editado com sucesso!",Toast.LENGTH_SHORT).show();
+        }
+
 
         cursorTimes = bd.rawQuery("SELECT * FROM times",null);
 
@@ -56,6 +62,8 @@ public class inicio_jogo extends AppCompatActivity {
         
         // Carregar recycler view jogadores do time
         listaTimes = findViewById(R.id.rvTimes);
+
+        System.out.println("TESTE NUM RODADAS:" +dados.getInt("numeroRodadas"));
         
         adapterTimes adapter = new adapterTimes(times, dados.getInt("numeroRodadas"), this);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
@@ -63,29 +71,6 @@ public class inicio_jogo extends AppCompatActivity {
         listaTimes.setHasFixedSize(true);
         listaTimes.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         listaTimes.setAdapter(adapter);
-/*
-        // Adicionando eventos de clique a partir de classe já estabelecida
-        listaTimes.addOnItemTouchListener(
-                new RecyclerItemClickListener(
-                        getApplicationContext(), listaTimes, new RecyclerItemClickListener.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(View view, int position) {
-                        int idTime = times.get(position).getId();
-                        analisarJogadores(view,idTime);
-                    }
-
-                    @Override
-                    public void onLongItemClick(View view, int position) {
-                        //Toast.makeText(getApplicationContext(), "Clique longo em " + times..get(position).getNome(), Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    }
-                }
-                )
-        );*/
 
     }
 

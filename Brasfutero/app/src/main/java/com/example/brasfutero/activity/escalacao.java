@@ -38,7 +38,7 @@ public class escalacao extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escalacao);
 
-        bd = openOrCreateDatabase("banco9",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco10",MODE_PRIVATE,null);
 
         nomeTime = findViewById(R.id.tvNomeTime);
         nomeTecnico = findViewById(R.id.tvNomeTecnico);
@@ -48,6 +48,10 @@ public class escalacao extends AppCompatActivity {
         intent = getIntent();
         dados = intent.getExtras();
         timeSelecionado = dados.getInt("idTime");
+        if(intent.hasExtra("edicaoJogador")){
+            if(dados.getInt("edicaoJogador") == 1)
+                Toast.makeText(getApplicationContext(),"Jogador editado com sucesso!",Toast.LENGTH_SHORT).show();
+        }
 
         // Selecionar o time escolhido
         cursorTime = bd.rawQuery("SELECT * FROM times WHERE id='"+timeSelecionado+"'",null);
@@ -111,14 +115,6 @@ public class escalacao extends AppCompatActivity {
             );
 
     }
-/*
-    @Override
-    public void onBackPressed()
-    {
-        Intent novaIntent = new Intent(this, inicio_jogo.class);
-        novaIntent.putExtra("numeroRodadas",dados.getInt("numeroRodadas"));
-        startActivity(intent);
-    }*/
 
     public void editarJogador(View view, int idJogador){
         Intent novaIntent = new Intent(this, editar_jogador.class);

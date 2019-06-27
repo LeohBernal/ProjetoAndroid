@@ -28,7 +28,7 @@ public class editar_time extends AppCompatActivity {
         setContentView(R.layout.activity_editar_time);
         intent = getIntent();
         dados = intent.getExtras();
-        bd = openOrCreateDatabase("banco9",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco10",MODE_PRIVATE,null);
 
         // Receber extras da intent
         intent = getIntent();
@@ -118,7 +118,7 @@ public class editar_time extends AppCompatActivity {
                 emp = Integer.parseInt(empate.getText().toString());
                 if(vit+der+emp == numeroRodadas){
                     bd.execSQL("UPDATE times SET vitoria = '"+vit+"', derrota = '"+der+"', empate = '"+emp+"' WHERE id = '"+timeSelecionado+"'");
-                    voltarTimes();
+                    voltarTimes(v,1);
                 } else {
                     Toast.makeText(getApplicationContext(),"Número de vitóras + empates + derrotas deve ser igual o número de rodadas ("+numeroRodadas+")!",Toast.LENGTH_SHORT).show();
                 }
@@ -128,7 +128,7 @@ public class editar_time extends AppCompatActivity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                voltarTimes();
+                voltarTimes(v,0);
             }
         });
 
@@ -180,7 +180,12 @@ public class editar_time extends AppCompatActivity {
 
     }
 
-    public void voltarTimes(){
+    public void voltarTimes(View v, int check){
+        Intent intent = new Intent(this,inicio_jogo.class);
+        intent.putExtra("numeroRodadas",numeroRodadas);
+        if(check == 1)
+            intent.putExtra("edicaoTime",1);
+        startActivity(intent);
         finish();
     }
 
