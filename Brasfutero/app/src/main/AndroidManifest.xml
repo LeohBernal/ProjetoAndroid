@@ -5,22 +5,14 @@
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Controle de Estatística Brasileirão 2019"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.editar_time"></activity>
+        <activity android:name=".activity.editar_time" />
         <activity android:name=".activity.editar_jogador" />
         <activity android:name=".activity.escalacao" />
-        <activity
-            android:name=".activity.inicio_jogo"
-            android:parentActivityName=".activity.MainActivity">
-
-            <!-- The meta-data tag is required if you support API level 15 and lower -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
-        </activity>
+        <activity android:name=".activity.estatiscas_times"/>
         <activity android:name=".activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

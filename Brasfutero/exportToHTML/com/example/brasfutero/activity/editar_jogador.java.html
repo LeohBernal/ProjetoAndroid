@@ -1,0 +1,235 @@
+<html>
+<head>
+<title>editar_jogador.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+editar_jogador.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.brasfutero.activity</span><span class="s0">;</span>
+
+import <span class="s1">android.content.Intent</span><span class="s0">;</span>
+import <span class="s1">android.database.Cursor</span><span class="s0">;</span>
+import <span class="s1">android.database.sqlite.SQLiteDatabase</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.app.AppCompatActivity</span><span class="s0">;</span>
+import <span class="s1">android.os.Bundle</span><span class="s0">;</span>
+import <span class="s1">android.view.View</span><span class="s0">;</span>
+import <span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+import <span class="s1">android.widget.TextView</span><span class="s0">;</span>
+
+import <span class="s1">com.example.brasfutero.R</span><span class="s0">;</span>
+import <span class="s1">com.example.brasfutero.model.Jogadores</span><span class="s0">;</span>
+
+public class <span class="s1">editar_jogador </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+    <span class="s0">private </span><span class="s1">Intent intent</span><span class="s0">;</span>
+    private <span class="s1">Bundle dados</span><span class="s0">;</span>
+    private <span class="s1">SQLiteDatabase bd</span><span class="s0">;</span>
+    private <span class="s1">Cursor cursorJogador</span><span class="s0">;</span>
+    private <span class="s1">Jogadores jogador = </span><span class="s0">new </span><span class="s1">Jogadores()</span><span class="s0">;</span>
+    private <span class="s1">ImageView plusGols</span><span class="s0">, </span><span class="s1">plusAssist</span><span class="s0">, </span><span class="s1">plusCA</span><span class="s0">, </span><span class="s1">plusCV</span><span class="s0">, </span><span class="s1">minusGols</span><span class="s0">, </span><span class="s1">minusAssist</span><span class="s0">, </span><span class="s1">minusCA</span><span class="s0">, </span><span class="s1">minusCV</span><span class="s0">, </span><span class="s1">save</span><span class="s0">, </span><span class="s1">cancel</span><span class="s0">;</span>
+    private <span class="s1">TextView gols</span><span class="s0">, </span><span class="s1">assist</span><span class="s0">, </span><span class="s1">CA</span><span class="s0">, </span><span class="s1">CV</span><span class="s0">, </span><span class="s1">nomeJogador</span><span class="s0">;</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_editar_jogador1)</span><span class="s0">;</span>
+        <span class="s1">bd = openOrCreateDatabase(</span><span class="s2">&quot;banco&quot;</span><span class="s0">,</span><span class="s1">MODE_PRIVATE</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">intent = getIntent()</span><span class="s0">;</span>
+        <span class="s1">dados = intent.getExtras()</span><span class="s0">;</span>
+
+        <span class="s3">// Setar os componentes</span>
+        <span class="s1">plusGols = findViewById(R.id.ivPlusGols)</span><span class="s0">;</span>
+        <span class="s1">plusAssist = findViewById(R.id.ivPlusAssist)</span><span class="s0">;</span>
+        <span class="s1">plusCA = findViewById(R.id.ivPlusCA)</span><span class="s0">;</span>
+        <span class="s1">plusCV  = findViewById(R.id.ivPlusCV)</span><span class="s0">;</span>
+        <span class="s1">minusGols = findViewById(R.id.ivMinusGols)</span><span class="s0">;</span>
+        <span class="s1">minusAssist = findViewById(R.id.ivMinusAssist)</span><span class="s0">;</span>
+        <span class="s1">minusCA = findViewById(R.id.ivMInusCA)</span><span class="s0">;</span>
+        <span class="s1">minusCV = findViewById(R.id.ivMinusCV)</span><span class="s0">;</span>
+        <span class="s1">gols = findViewById(R.id.tvEdicNumGols)</span><span class="s0">;</span>
+        <span class="s1">assist = findViewById(R.id.tvEdicNumAssist)</span><span class="s0">;</span>
+        <span class="s1">CA = findViewById(R.id.tvEdicNumCA)</span><span class="s0">;</span>
+        <span class="s1">CV = findViewById(R.id.tvEdicNumCV)</span><span class="s0">;</span>
+        <span class="s1">nomeJogador = findViewById(R.id.tvEdicNomeJogador)</span><span class="s0">;</span>
+        <span class="s1">save = findViewById(R.id.ivSalvarJogador)</span><span class="s0">;</span>
+        <span class="s1">cancel = findViewById(R.id.ivCancelarJogador)</span><span class="s0">;</span>
+
+
+        <span class="s3">// Carrega o jogador selecionado</span>
+        <span class="s1">cursorJogador = bd.rawQuery(</span><span class="s2">&quot;SELECT * FROM jogadores WHERE id='&quot;</span><span class="s1">+dados.getInt(</span><span class="s2">&quot;idJogador&quot;</span><span class="s1">)+</span><span class="s2">&quot;'&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorJogador.moveToFirst()</span><span class="s0">;</span>
+
+        <span class="s3">// Insere seus dados em um Jogadores</span>
+        <span class="s1">jogador.setNome(cursorJogador.getString(cursorJogador.getColumnIndex(</span><span class="s2">&quot;nome&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">jogador.setGols(cursorJogador.getInt(cursorJogador.getColumnIndex(</span><span class="s2">&quot;gols&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">jogador.setAssistencia(cursorJogador.getInt(cursorJogador.getColumnIndex(</span><span class="s2">&quot;assistencia&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">jogador.setCA(cursorJogador.getInt(cursorJogador.getColumnIndex(</span><span class="s2">&quot;CA&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">jogador.setCV(cursorJogador.getInt(cursorJogador.getColumnIndex(</span><span class="s2">&quot;CV&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+
+        <span class="s3">// Apresenta os dados da tabela inicialmente</span>
+        <span class="s1">gols.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+jogador.getGols())</span><span class="s0">;</span>
+        <span class="s1">assist.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+jogador.getAssistencia())</span><span class="s0">;</span>
+        <span class="s1">CA.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+jogador.getCA())</span><span class="s0">;</span>
+        <span class="s1">CV.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+jogador.getCV())</span><span class="s0">;</span>
+        <span class="s1">nomeJogador.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+jogador.getNome())</span><span class="s0">;</span>
+
+        <span class="s3">// Incremento ou decremento de gols, assist, CA, CV</span>
+        <span class="s1">plusGols.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                incrementarTV(<span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">plusAssist.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                incrementarTV(<span class="s4">2</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">plusCA.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                incrementarTV(<span class="s4">3</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">plusCV.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                incrementarTV(<span class="s4">4</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">minusGols.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                decrementarTV(<span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">minusAssist.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                decrementarTV(<span class="s4">2</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">minusCA.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                decrementarTV(<span class="s4">3</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">minusCV.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                decrementarTV(<span class="s4">4</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+
+        <span class="s3">// Atualiza os dados do jogador</span>
+        <span class="s1">save.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                String gol<span class="s0">, </span><span class="s1">assistencia</span><span class="s0">, </span><span class="s1">CAs</span><span class="s0">, </span><span class="s1">CVs</span><span class="s0">;</span>
+                <span class="s1">gol = gols.getText().toString()</span><span class="s0">;</span>
+                <span class="s1">assistencia = assist.getText().toString()</span><span class="s0">;</span>
+                <span class="s1">CAs = CA.getText().toString()</span><span class="s0">;</span>
+                <span class="s1">CVs = CV.getText().toString()</span><span class="s0">;</span>
+                <span class="s1">bd.execSQL(</span><span class="s2">&quot;UPDATE jogadores SET gols = '&quot;</span><span class="s1">+gol+</span><span class="s2">&quot;', assistencia = '&quot;</span><span class="s1">+assistencia+</span><span class="s2">&quot;', CA = '&quot;</span><span class="s1">+CAs+</span><span class="s2">&quot;', CV = '&quot;</span><span class="s1">+CVs+</span><span class="s2">&quot;' WHERE id = '&quot;</span><span class="s1">+dados.getInt(</span><span class="s2">&quot;idJogador&quot;</span><span class="s1">)+</span><span class="s2">&quot;'&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">retornarEscalacao(v</span><span class="s0">,</span><span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+
+        <span class="s3">// Apenas volta a escalação</span>
+        <span class="s1">cancel.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                retornarEscalacao(v<span class="s0">,</span><span class="s4">0</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">incrementarTV(</span><span class="s0">int </span><span class="s1">campo){</span>
+        <span class="s0">int </span><span class="s1">CAs</span><span class="s0">, </span><span class="s1">CVs</span><span class="s0">;</span>
+        <span class="s1">CAs = Integer.parseInt(CA.getText().toString())</span><span class="s0">;</span>
+        <span class="s1">CVs = Integer.parseInt(CV.getText().toString())</span><span class="s0">;</span>
+            int <span class="s1">valorCampo = </span><span class="s4">0</span><span class="s0">;</span>
+            if<span class="s1">(campo == </span><span class="s4">1</span><span class="s1">) {</span>
+                valorCampo = Integer.parseInt(gols.getText().toString())<span class="s0">;</span>
+                <span class="s1">valorCampo++</span><span class="s0">;</span>
+                <span class="s1">gols.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">2</span><span class="s1">){</span>
+                valorCampo = Integer.parseInt(assist.getText().toString())<span class="s0">;</span>
+                <span class="s1">valorCampo++</span><span class="s0">;</span>
+                <span class="s1">assist.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">3</span><span class="s1">){</span>
+                <span class="s0">if</span><span class="s1">((CAs)+(CVs*</span><span class="s4">2</span><span class="s1">) &lt; dados.getInt(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s1">)) {</span>
+                    valorCampo = Integer.parseInt(CA.getText().toString())<span class="s0">;</span>
+                    <span class="s1">valorCampo++</span><span class="s0">;</span>
+                    <span class="s1">CA.setText(valorCampo + </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            } <span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">4</span><span class="s1">){</span>
+                <span class="s0">if</span><span class="s1">(CAs+((CVs)*</span><span class="s4">2</span><span class="s1">) &lt; dados.getInt(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s1">)) {</span>
+                    valorCampo = Integer.parseInt(CV.getText().toString())<span class="s0">;</span>
+                    <span class="s1">valorCampo++</span><span class="s0">;</span>
+                    <span class="s1">CV.setText(valorCampo + </span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            }
+    }
+
+    <span class="s0">public void </span><span class="s1">decrementarTV(</span><span class="s0">int </span><span class="s1">campo){</span>
+        <span class="s0">int </span><span class="s1">gol</span><span class="s0">, </span><span class="s1">assists</span><span class="s0">, </span><span class="s1">CAs</span><span class="s0">, </span><span class="s1">CVs</span><span class="s0">;</span>
+        <span class="s1">gol = Integer.parseInt(gols.getText().toString())</span><span class="s0">;</span>
+        <span class="s1">assists = Integer.parseInt(assist.getText().toString())</span><span class="s0">;</span>
+        <span class="s1">CAs = Integer.parseInt(CA.getText().toString())</span><span class="s0">;</span>
+        <span class="s1">CVs = Integer.parseInt(CV.getText().toString())</span><span class="s0">;</span>
+        int <span class="s1">valorCampo = </span><span class="s4">0</span><span class="s0">;</span>
+        if<span class="s1">(campo == </span><span class="s4">1 </span><span class="s1">&amp;&amp; gol &gt; </span><span class="s4">0</span><span class="s1">) {</span>
+            valorCampo = Integer.parseInt(gols.getText().toString())<span class="s0">;</span>
+            <span class="s1">valorCampo--</span><span class="s0">;</span>
+            <span class="s1">gols.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">2 </span><span class="s1">&amp;&amp; assists &gt; </span><span class="s4">0</span><span class="s1">){</span>
+            valorCampo = Integer.parseInt(assist.getText().toString())<span class="s0">;</span>
+            <span class="s1">valorCampo--</span><span class="s0">;</span>
+            <span class="s1">assist.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">3 </span><span class="s1">&amp;&amp; CAs &gt; </span><span class="s4">0</span><span class="s1">){</span>
+            valorCampo = Integer.parseInt(CA.getText().toString())<span class="s0">;</span>
+            <span class="s1">valorCampo--</span><span class="s0">;</span>
+            <span class="s1">CA.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">} </span><span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">4 </span><span class="s1">&amp;&amp; CVs &gt; </span><span class="s4">0</span><span class="s1">){</span>
+            valorCampo = Integer.parseInt(CV.getText().toString())<span class="s0">;</span>
+            <span class="s1">valorCampo--</span><span class="s0">;</span>
+            <span class="s1">CV.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    }
+
+    @Override
+    <span class="s0">public void </span><span class="s1">onBackPressed()</span>
+    {
+        <span class="s0">super</span><span class="s1">.onBackPressed()</span><span class="s0">;</span>
+        <span class="s1">finish()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s3">// Retorna se houve ou não edição do jogador</span>
+    <span class="s0">public void </span><span class="s1">retornarEscalacao(View view</span><span class="s0">, int </span><span class="s1">check){</span>
+        Intent intent = <span class="s0">new </span><span class="s1">Intent(</span><span class="s0">this,</span><span class="s1">escalacao.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">intent.putExtra(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s0">,</span><span class="s1">dados.getInt(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s1">))</span><span class="s0">;</span>
+        <span class="s1">intent.putExtra(</span><span class="s2">&quot;idTime&quot;</span><span class="s0">,</span><span class="s1">dados.getInt(</span><span class="s2">&quot;idTime&quot;</span><span class="s1">))</span><span class="s0">;</span>
+        if<span class="s1">(check == </span><span class="s4">1</span><span class="s1">)</span>
+            intent.putExtra(<span class="s2">&quot;edicaoJogador&quot;</span><span class="s0">,</span><span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">setResult(RESULT_OK</span><span class="s0">, </span><span class="s1">intent)</span><span class="s0">;</span>
+        <span class="s1">finish()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+}
+</pre>
+</body>
+</html>

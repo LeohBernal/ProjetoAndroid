@@ -42,10 +42,13 @@ public class adapterTimes extends RecyclerView.Adapter<adapterTimes.MyViewHolder
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, final int i) {
         double aproveitamento, pontosTotais;
-        pontosTotais = numeroRodadas*3;
-        aproveitamento = ((listaTimes.get(i).getVitoria()*3+listaTimes.get(i).getEmpate())/pontosTotais)*100;
+        if(numeroRodadas != 0) {
+            pontosTotais = numeroRodadas * 3;
+            aproveitamento = ((listaTimes.get(i).getVitoria() * 3 + listaTimes.get(i).getEmpate()) / pontosTotais) * 100;
+        } else {
+            aproveitamento = 0;
+        }
         myViewHolder.nome.setText(listaTimes.get(i).getNome());
-        myViewHolder.tecnico.setText(listaTimes.get(i).getTecnico());
         myViewHolder.vitoria.setText(listaTimes.get(i).getVitoria()+"");
         myViewHolder.derrota.setText(listaTimes.get(i).getDerrota()+"");
         myViewHolder.empate.setText(listaTimes.get(i).getEmpate()+"");
@@ -68,7 +71,9 @@ public class adapterTimes extends RecyclerView.Adapter<adapterTimes.MyViewHolder
                 Intent intent = new Intent(activity, editar_time.class);
                 intent.putExtra("idTime", listaTimes.get(i).getId());
                 intent.putExtra("numeroRodadas",numeroRodadas);
-                activity.startActivity(intent);
+                // Inicia activity de edição de time e quando finalizada, retorna parâmetro para estatiscas_times
+                activity.startActivityForResult(intent, 1);
+
             }
         });
 
@@ -81,7 +86,7 @@ public class adapterTimes extends RecyclerView.Adapter<adapterTimes.MyViewHolder
 
     public class MyViewHolder extends RecyclerView.ViewHolder{
         //cria elementos gráficos que estarão no modelo
-        TextView nome, tecnico, vitoria, derrota, empate, aproveitamento;
+        TextView nome, vitoria, derrota, empate, aproveitamento;
         ImageView escudo;
         LinearLayout jogadores, editarTime;
 
@@ -89,8 +94,6 @@ public class adapterTimes extends RecyclerView.Adapter<adapterTimes.MyViewHolder
             super(itemView);
 
             nome = itemView.findViewById(R.id.tvNomeTime);
-            tecnico = itemView.findViewById(R.id.tvNomeTecnico);
-            tecnico = itemView.findViewById(R.id.tvNomeTecnico);
             vitoria = itemView.findViewById(R.id.tvNumVit);
             derrota = itemView.findViewById(R.id.tvNumDerrota);
             empate = itemView.findViewById(R.id.tvNumEmpate);

@@ -1,0 +1,274 @@
+<html>
+<head>
+<title>escalacao.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+escalacao.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.brasfutero.activity</span><span class="s0">;</span>
+
+import <span class="s1">android.database.Cursor</span><span class="s0">;</span>
+import <span class="s1">android.database.sqlite.SQLiteDatabase</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.app.AppCompatActivity</span><span class="s0">;</span>
+import <span class="s1">android.os.Bundle</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.widget.DividerItemDecoration</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.widget.LinearLayoutManager</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.widget.RecyclerView</span><span class="s0">;</span>
+import <span class="s1">android.view.View</span><span class="s0">;</span>
+import <span class="s1">android.widget.AdapterView</span><span class="s0">;</span>
+import <span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+import <span class="s1">android.widget.LinearLayout</span><span class="s0">;</span>
+import <span class="s1">android.widget.TextView</span><span class="s0">;</span>
+import <span class="s1">android.content.Intent</span><span class="s0">;</span>
+import <span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+import <span class="s1">com.example.brasfutero.R</span><span class="s0">;</span>
+import <span class="s1">com.example.brasfutero.adapter.adapterEscalacao</span><span class="s0">;</span>
+import <span class="s1">com.example.brasfutero.model.Jogadores</span><span class="s0">;</span>
+import <span class="s1">com.example.brasfutero.model.RecyclerItemClickListener</span><span class="s0">;</span>
+import <span class="s1">com.example.brasfutero.model.Times</span><span class="s0">;</span>
+
+import <span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+import <span class="s1">java.util.List</span><span class="s0">;</span>
+
+public class <span class="s1">escalacao </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+    <span class="s0">private </span><span class="s1">RecyclerView listaJogadores</span><span class="s0">;</span>
+    private <span class="s1">List&lt;Jogadores&gt;  jogadores = </span><span class="s0">new </span><span class="s1">ArrayList&lt;Jogadores&gt;()</span><span class="s0">;</span>
+    private <span class="s1">Bundle dados</span><span class="s0">;</span>
+    private <span class="s1">Cursor cursorTime</span><span class="s0">, </span><span class="s1">cursorJogadores</span><span class="s0">;</span>
+    private <span class="s1">SQLiteDatabase bd</span><span class="s0">;</span>
+    private <span class="s1">TextView nomeTime</span><span class="s0">, </span><span class="s1">nomeTecnico</span><span class="s0">;</span>
+    private <span class="s1">Intent intent</span><span class="s0">;</span>
+    private <span class="s1">ImageView escudo</span><span class="s0">, </span><span class="s1">duvida</span><span class="s0">;</span>
+    private <span class="s1">adapterEscalacao adapter</span><span class="s0">;</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_escalacao)</span><span class="s0">;</span>
+
+        <span class="s1">bd = openOrCreateDatabase(</span><span class="s2">&quot;banco&quot;</span><span class="s0">,</span><span class="s1">MODE_PRIVATE</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">nomeTime = findViewById(R.id.tvNomeTime)</span><span class="s0">;</span>
+        <span class="s1">nomeTecnico = findViewById(R.id.tvNomeTecnico)</span><span class="s0">;</span>
+
+        <span class="s1">duvida = findViewById(R.id.ivDuvida2)</span><span class="s0">;</span>
+
+        <span class="s3">// Receber extras da intent</span>
+        <span class="s0">int </span><span class="s1">timeSelecionado</span><span class="s0">;</span>
+        <span class="s1">intent = getIntent()</span><span class="s0">;</span>
+        <span class="s1">dados = intent.getExtras()</span><span class="s0">;</span>
+        <span class="s1">timeSelecionado = dados.getInt(</span><span class="s2">&quot;idTime&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s3">/* 
+        if(intent.hasExtra(&quot;edicaoJogador&quot;)){ 
+            if(dados.getInt(&quot;edicaoJogador&quot;) == 1) 
+                Toast.makeText(getApplicationContext(),&quot;Jogador editado com sucesso!&quot;,Toast.LENGTH_SHORT).show(); 
+        }*/</span>
+
+        // Selecionar o time escolhido
+        <span class="s1">cursorTime = bd.rawQuery(</span><span class="s2">&quot;SELECT * FROM times WHERE id='&quot;</span><span class="s1">+timeSelecionado+</span><span class="s2">&quot;'&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorTime.moveToFirst()</span><span class="s0">;</span>
+        <span class="s1">Times time = </span><span class="s0">new </span><span class="s1">Times()</span><span class="s0">;</span>
+        <span class="s1">time.setId(cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;id&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">time.setNome(cursorTime.getString(cursorTime.getColumnIndex(</span><span class="s2">&quot;nome&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">time.setTecnico(cursorTime.getString(cursorTime.getColumnIndex(</span><span class="s2">&quot;tecnico&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">nomeTime.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+time.getNome())</span><span class="s0">;</span>
+        <span class="s1">nomeTecnico.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+time.getTecnico())</span><span class="s0">;</span>
+        <span class="s1">carregarEscudo()</span><span class="s0">;</span>
+
+        <span class="s3">// Carregar recycler view jogadores do time</span>
+        <span class="s1">listaJogadores = findViewById(R.id.rvListaJogadores)</span><span class="s0">;</span>
+
+        <span class="s3">// Armazenar jogadores em um list</span>
+        <span class="s1">cursorJogadores = bd.rawQuery(</span><span class="s2">&quot;SELECT * FROM jogadores WHERE id_time='&quot;</span><span class="s1">+timeSelecionado+</span><span class="s2">&quot;'&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorJogadores.moveToFirst()</span><span class="s0">;</span>
+        if<span class="s1">(cursorJogadores.moveToFirst()){</span>
+            <span class="s0">do</span><span class="s1">{</span>
+                Jogadores jogador = <span class="s0">new </span><span class="s1">Jogadores()</span><span class="s0">;</span>
+                <span class="s1">jogador.setId(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;id&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setIdade(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;idade&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setNome(cursorJogadores.getString(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;nome&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setNacionalidade(cursorJogadores.getString(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;nacionalidade&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setPosicao(cursorJogadores.getString(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;posicao&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setGols(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;gols&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setAssistencia(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;assistencia&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setCA(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;CA&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setCV(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;CV&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogadores.add(jogador)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">while </span><span class="s1">(cursorJogadores.moveToNext())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+
+        <span class="s3">// Criar adapter para jogadores, passando como parâmetro número de rodadas para cálculo de suas estatíscas</span>
+        <span class="s1">adapter = </span><span class="s0">new </span><span class="s1">adapterEscalacao(jogadores</span><span class="s0">,</span><span class="s1">dados.getInt(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s1">))</span><span class="s0">;</span>
+        <span class="s1">RecyclerView.LayoutManager layoutManager = </span><span class="s0">new </span><span class="s1">LinearLayoutManager(getApplicationContext())</span><span class="s0">;</span>
+        <span class="s1">listaJogadores.setLayoutManager(layoutManager)</span><span class="s0">;</span>
+        <span class="s1">listaJogadores.setHasFixedSize(</span><span class="s0">true</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">listaJogadores.addItemDecoration(</span><span class="s0">new </span><span class="s1">DividerItemDecoration(</span><span class="s0">this, </span><span class="s1">LinearLayout.VERTICAL))</span><span class="s0">;</span>
+        <span class="s1">listaJogadores.setAdapter(adapter)</span><span class="s0">;</span>
+
+        <span class="s3">// Ao clicar no jogador, vai para sua edição</span>
+            <span class="s1">listaJogadores.addOnItemTouchListener(</span>
+                    <span class="s0">new </span><span class="s1">RecyclerItemClickListener(</span>
+                            getApplicationContext()<span class="s0">, </span><span class="s1">listaJogadores</span><span class="s0">, new </span><span class="s1">RecyclerItemClickListener.OnItemClickListener() {</span>
+                        @Override
+                        <span class="s0">public void </span><span class="s1">onItemClick(View view</span><span class="s0">, int </span><span class="s1">position) {</span>
+                            <span class="s0">int </span><span class="s1">idJogador = jogadores.get(position).getId()</span><span class="s0">;</span>
+                            <span class="s1">editarJogador(view</span><span class="s0">,</span><span class="s1">idJogador)</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+
+                        @Override
+                        <span class="s0">public void </span><span class="s1">onLongItemClick(View view</span><span class="s0">, int </span><span class="s1">position) {</span>
+                            Toast.makeText(getApplicationContext()<span class="s0">, </span><span class="s2">&quot;Clique longo em &quot; </span><span class="s1">+ jogadores.get(position).getNome()</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                        <span class="s1">}</span>
+
+                        @Override
+                        <span class="s0">public void </span><span class="s1">onItemClick(AdapterView&lt;?&gt; parent</span><span class="s0">, </span><span class="s1">View view</span><span class="s0">, int </span><span class="s1">position</span><span class="s0">, long </span><span class="s1">id) {</span>
+
+                        }
+                    }
+                    )
+            )<span class="s0">;</span>
+
+            <span class="s1">duvida.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+                @Override
+                <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                    Toast.makeText(getApplicationContext()<span class="s0">,</span><span class="s2">&quot;Selecione o jogador para editar seus dados&quot;</span><span class="s0">,</span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            })<span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s3">// Inicia uma nova activity que ao ser finalizada, retorna o resultado para esta activity</span>
+    <span class="s0">public void </span><span class="s1">editarJogador(View view</span><span class="s0">, int </span><span class="s1">idJogador){</span>
+        Intent intent = <span class="s0">new </span><span class="s1">Intent(</span><span class="s0">this, </span><span class="s1">editar_jogador.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">intent.putExtra(</span><span class="s2">&quot;idTime&quot;</span><span class="s0">, </span><span class="s1">dados.getInt(</span><span class="s2">&quot;idTime&quot;</span><span class="s1">))</span><span class="s0">;</span>
+        <span class="s1">intent.putExtra(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s0">,</span><span class="s1">dados.getInt(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s1">))</span><span class="s0">;</span>
+        <span class="s1">intent.putExtra(</span><span class="s2">&quot;idJogador&quot;</span><span class="s0">,</span><span class="s1">idJogador)</span><span class="s0">;</span>
+        <span class="s1">startActivityForResult(intent</span><span class="s0">, </span><span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s3">// Recebe os parametros da activity de edição de jogador, para que possa mostrar uma mensagem caso jogador tenha sido editado</span>
+    <span class="s0">public void </span><span class="s1">onActivityResult(</span><span class="s0">int </span><span class="s1">requestCode</span><span class="s0">, int </span><span class="s1">resultCode</span><span class="s0">, </span><span class="s1">Intent data) {</span>
+        <span class="s0">super</span><span class="s1">.onActivityResult(requestCode</span><span class="s0">, </span><span class="s1">resultCode</span><span class="s0">, </span><span class="s1">data)</span><span class="s0">;</span>
+        if <span class="s1">(requestCode == </span><span class="s4">1</span><span class="s1">) {</span>
+            <span class="s0">if</span><span class="s1">(resultCode == RESULT_OK) {</span>
+                <span class="s0">if </span><span class="s1">(data.getIntExtra(</span><span class="s2">&quot;edicaoJogador&quot;</span><span class="s0">, </span><span class="s4">0</span><span class="s1">) == </span><span class="s4">1</span><span class="s1">) {</span>
+                    Toast.makeText(getApplicationContext()<span class="s0">,</span><span class="s2">&quot;Jogador editado com sucesso!&quot;</span><span class="s0">,</span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            }
+        }
+    }
+
+    @Override
+    <span class="s0">public void </span><span class="s1">onBackPressed()</span>
+    {
+        <span class="s0">super</span><span class="s1">.onBackPressed()</span><span class="s0">;</span>
+        <span class="s1">finish()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s3">// Limpa o list de jogadores e insere novamente atualizado</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onResume() {</span>
+        <span class="s0">super</span><span class="s1">.onResume()</span><span class="s0">;</span>
+        <span class="s1">cursorJogadores = bd.rawQuery(</span><span class="s2">&quot;SELECT * FROM jogadores WHERE id_time='&quot;</span><span class="s1">+ dados.getInt(</span><span class="s2">&quot;idTime&quot;</span><span class="s1">)+</span><span class="s2">&quot;'&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorJogadores.moveToFirst()</span><span class="s0">;</span>
+        <span class="s1">jogadores.clear()</span><span class="s0">;</span>
+        if<span class="s1">(cursorJogadores.moveToFirst()){</span>
+            <span class="s0">do</span><span class="s1">{</span>
+                Jogadores jogador = <span class="s0">new </span><span class="s1">Jogadores()</span><span class="s0">;</span>
+                <span class="s1">jogador.setId(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;id&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setIdade(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;idade&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setNome(cursorJogadores.getString(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;nome&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setNacionalidade(cursorJogadores.getString(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;nacionalidade&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setPosicao(cursorJogadores.getString(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;posicao&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setGols(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;gols&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setAssistencia(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;assistencia&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setCA(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;CA&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogador.setCV(cursorJogadores.getInt(cursorJogadores.getColumnIndex(</span><span class="s2">&quot;CV&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">jogadores.add(jogador)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">while </span><span class="s1">(cursorJogadores.moveToNext())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        adapter.notifyDataSetChanged()<span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">carregarEscudo(){</span>
+        <span class="s0">int </span><span class="s1">id = cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;id&quot;</span><span class="s1">))</span><span class="s0">;</span>
+        <span class="s1">escudo = findViewById(R.id.ivTime)</span><span class="s0">;</span>
+        switch <span class="s1">(id){</span>
+            <span class="s0">case </span><span class="s4">1</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.santos)<span class="s0">;</span>
+                break;
+            case <span class="s4">2</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.palmeiras)<span class="s0">;</span>
+                break;
+            case <span class="s4">3</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.corinthians)<span class="s0">;</span>
+                break;
+            case <span class="s4">4</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.saopaulo)<span class="s0">;</span>
+                break;
+            case <span class="s4">5</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.flamengo)<span class="s0">;</span>
+                break;
+            case <span class="s4">6</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.fluminense)<span class="s0">;</span>
+                break;
+            case <span class="s4">7</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.vasco)<span class="s0">;</span>
+                break;
+            case <span class="s4">8</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.botafogo)<span class="s0">;</span>
+                break;
+            case <span class="s4">9</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.cruzeiro)<span class="s0">;</span>
+                break;
+            case <span class="s4">10</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.atleticomg)<span class="s0">;</span>
+                break;
+            case <span class="s4">11</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.internacional)<span class="s0">;</span>
+                break;
+            case <span class="s4">12</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.gremio)<span class="s0">;</span>
+                break;
+            case <span class="s4">13</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.bahia)<span class="s0">;</span>
+                break;
+            case <span class="s4">14</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.ceara)<span class="s0">;</span>
+                break;
+            case <span class="s4">15</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.fortaleza)<span class="s0">;</span>
+                break;
+            case <span class="s4">16</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.athleticopr)<span class="s0">;</span>
+                break;
+            case <span class="s4">17</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.goias)<span class="s0">;</span>
+                break;
+            case <span class="s4">18</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.chapecoense)<span class="s0">;</span>
+                break;
+            case <span class="s4">19</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.avai)<span class="s0">;</span>
+                break;
+            case <span class="s4">20</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.csa)<span class="s0">;</span>
+                break;
+        <span class="s1">}</span>
+    }
+
+}
+</pre>
+</body>
+</html>

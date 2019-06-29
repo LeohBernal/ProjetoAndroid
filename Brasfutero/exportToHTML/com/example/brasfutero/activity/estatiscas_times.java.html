@@ -1,0 +1,140 @@
+<html>
+<head>
+<title>estatiscas_times.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+estatiscas_times.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.brasfutero.activity</span><span class="s0">;</span>
+
+import <span class="s1">android.content.Intent</span><span class="s0">;</span>
+import <span class="s1">android.database.Cursor</span><span class="s0">;</span>
+import <span class="s1">android.database.sqlite.SQLiteDatabase</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.app.AppCompatActivity</span><span class="s0">;</span>
+import <span class="s1">android.os.Bundle</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.widget.DividerItemDecoration</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.widget.LinearLayoutManager</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.widget.RecyclerView</span><span class="s0">;</span>
+import <span class="s1">android.view.View</span><span class="s0">;</span>
+import <span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+import <span class="s1">android.widget.LinearLayout</span><span class="s0">;</span>
+import <span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+import <span class="s1">com.example.brasfutero.adapter.adapterTimes</span><span class="s0">;</span>
+import <span class="s1">com.example.brasfutero.model.Times</span><span class="s0">;</span>
+import <span class="s1">com.example.brasfutero.R</span><span class="s0">;</span>
+import <span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+import <span class="s1">java.util.List</span><span class="s0">;</span>
+
+public class <span class="s1">estatiscas_times </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+    <span class="s0">private </span><span class="s1">SQLiteDatabase bd</span><span class="s0">;</span>
+    private <span class="s1">Cursor cursorTimes</span><span class="s0">;</span>
+    private <span class="s1">Intent intent</span><span class="s0">;</span>
+    private <span class="s1">Bundle dados</span><span class="s0">;</span>
+    private <span class="s1">RecyclerView listaTimes</span><span class="s0">;</span>
+    private <span class="s1">List&lt;Times&gt; times = </span><span class="s0">new </span><span class="s1">ArrayList&lt;Times&gt;()</span><span class="s0">;</span>
+    private <span class="s1">adapterTimes adapter</span><span class="s0">;</span>
+    private <span class="s1">ImageView duvida</span><span class="s0">;</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.estatiscas_times)</span><span class="s0">;</span>
+        <span class="s1">bd = openOrCreateDatabase(</span><span class="s2">&quot;banco&quot;</span><span class="s0">,</span><span class="s1">MODE_PRIVATE</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">intent = getIntent()</span><span class="s0">;</span>
+        <span class="s1">dados = intent.getExtras()</span><span class="s0">;</span>
+
+        <span class="s1">duvida = findViewById(R.id.ivDuvida1)</span><span class="s0">;</span>
+
+        <span class="s3">// Carrega todos os times do banco em uma list</span>
+        <span class="s1">cursorTimes = bd.rawQuery(</span><span class="s2">&quot;SELECT * FROM times&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        if<span class="s1">(cursorTimes.moveToFirst()) {</span>
+            <span class="s0">do </span><span class="s1">{</span>
+                Times time = <span class="s0">new </span><span class="s1">Times()</span><span class="s0">;</span>
+                <span class="s1">time.setId(cursorTimes.getInt(cursorTimes.getColumnIndex(</span><span class="s2">&quot;id&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setNome(cursorTimes.getString(cursorTimes.getColumnIndex(</span><span class="s2">&quot;nome&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setTecnico(cursorTimes.getString(cursorTimes.getColumnIndex(</span><span class="s2">&quot;tecnico&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setVitoria(cursorTimes.getInt(cursorTimes.getColumnIndex(</span><span class="s2">&quot;vitoria&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setDerrota(cursorTimes.getInt(cursorTimes.getColumnIndex(</span><span class="s2">&quot;derrota&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setEmpate(cursorTimes.getInt(cursorTimes.getColumnIndex(</span><span class="s2">&quot;empate&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">times.add(time)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">while </span><span class="s1">(cursorTimes.moveToNext())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        
+        <span class="s3">// Carregar recycler view jogadores do time</span>
+        <span class="s1">listaTimes = findViewById(R.id.rvTimes)</span><span class="s0">;</span>
+
+        <span class="s3">// Gera o adapter para a lista de times, passando como parâmetro o número de rodadas para cálculo das estatíscas das equipes</span>
+        <span class="s1">adapter = </span><span class="s0">new </span><span class="s1">adapterTimes(times</span><span class="s0">, </span><span class="s1">dados.getInt(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s1">)</span><span class="s0">, this</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">RecyclerView.LayoutManager layoutManager = </span><span class="s0">new </span><span class="s1">LinearLayoutManager(getApplicationContext())</span><span class="s0">;</span>
+        <span class="s1">listaTimes.setLayoutManager(layoutManager)</span><span class="s0">;</span>
+        <span class="s1">listaTimes.setHasFixedSize(</span><span class="s0">true</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">listaTimes.addItemDecoration(</span><span class="s0">new </span><span class="s1">DividerItemDecoration(</span><span class="s0">this, </span><span class="s1">LinearLayout.VERTICAL))</span><span class="s0">;</span>
+        <span class="s1">listaTimes.setAdapter(adapter)</span><span class="s0">;</span>
+
+        <span class="s1">duvida.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                Toast.makeText(getApplicationContext()<span class="s0">,</span><span class="s2">&quot;Selecione a equipe para verificar as estatísticas do jogadores</span><span class="s0">\n</span><span class="s2">Selecione a imagem de edição da equipe para edita-la&quot;</span><span class="s0">,</span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    @Override
+    <span class="s0">public void </span><span class="s1">onBackPressed()</span>
+    {
+        <span class="s0">super</span><span class="s1">.onBackPressed()</span><span class="s0">;</span>
+        <span class="s1">finish()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s3">// Recebe os parâmetros quando é finalizada a activity de edição de equipe, para mostrar um Toast com sucesso de edição caso tenha ocorrido.</span>
+    <span class="s0">public void </span><span class="s1">onActivityResult(</span><span class="s0">int </span><span class="s1">requestCode</span><span class="s0">, int </span><span class="s1">resultCode</span><span class="s0">, </span><span class="s1">Intent data) {</span>
+        <span class="s0">super</span><span class="s1">.onActivityResult(requestCode</span><span class="s0">, </span><span class="s1">resultCode</span><span class="s0">, </span><span class="s1">data)</span><span class="s0">;</span>
+        if <span class="s1">(requestCode == </span><span class="s4">1</span><span class="s1">) {</span>
+            <span class="s0">if</span><span class="s1">(resultCode == RESULT_OK) {</span>
+                <span class="s0">if </span><span class="s1">(data.getIntExtra(</span><span class="s2">&quot;edicaoTime&quot;</span><span class="s0">, </span><span class="s4">0</span><span class="s1">) == </span><span class="s4">1</span><span class="s1">) {</span>
+                    Toast.makeText(getApplicationContext()<span class="s0">, </span><span class="s2">&quot;Time editado com sucesso!&quot;</span><span class="s0">, </span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            }
+        }
+    }
+
+    <span class="s3">// Ao retornar a tela, limpa a lista de equipes e insere novamente para apresentar todos os dados atualizados</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onResume() {</span>
+        <span class="s0">super</span><span class="s1">.onResume()</span><span class="s0">;</span>
+        <span class="s1">times.clear()</span><span class="s0">;</span>
+        <span class="s1">cursorTimes = bd.rawQuery(</span><span class="s2">&quot;SELECT * FROM times&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        if<span class="s1">(cursorTimes.moveToFirst()) {</span>
+            <span class="s0">do </span><span class="s1">{</span>
+                Times time = <span class="s0">new </span><span class="s1">Times()</span><span class="s0">;</span>
+                <span class="s1">time.setId(cursorTimes.getInt(cursorTimes.getColumnIndex(</span><span class="s2">&quot;id&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setNome(cursorTimes.getString(cursorTimes.getColumnIndex(</span><span class="s2">&quot;nome&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setTecnico(cursorTimes.getString(cursorTimes.getColumnIndex(</span><span class="s2">&quot;tecnico&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setVitoria(cursorTimes.getInt(cursorTimes.getColumnIndex(</span><span class="s2">&quot;vitoria&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setDerrota(cursorTimes.getInt(cursorTimes.getColumnIndex(</span><span class="s2">&quot;derrota&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">time.setEmpate(cursorTimes.getInt(cursorTimes.getColumnIndex(</span><span class="s2">&quot;empate&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+                <span class="s1">times.add(time)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">while </span><span class="s1">(cursorTimes.moveToNext())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+        adapter.notifyDataSetChanged()<span class="s0">;</span>
+    <span class="s1">}</span>
+
+
+
+}
+</pre>
+</body>
+</html>

@@ -32,26 +32,30 @@ public class escalacao extends AppCompatActivity {
     private SQLiteDatabase bd;
     private TextView nomeTime, nomeTecnico;
     private Intent intent;
-    private ImageView escudo;
+    private ImageView escudo, duvida;
+    private adapterEscalacao adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_escalacao);
 
-        bd = openOrCreateDatabase("banco10",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco",MODE_PRIVATE,null);
 
         nomeTime = findViewById(R.id.tvNomeTime);
         nomeTecnico = findViewById(R.id.tvNomeTecnico);
+
+        duvida = findViewById(R.id.ivDuvida2);
 
         // Receber extras da intent
         int timeSelecionado;
         intent = getIntent();
         dados = intent.getExtras();
         timeSelecionado = dados.getInt("idTime");
+        /*
         if(intent.hasExtra("edicaoJogador")){
             if(dados.getInt("edicaoJogador") == 1)
                 Toast.makeText(getApplicationContext(),"Jogador editado com sucesso!",Toast.LENGTH_SHORT).show();
-        }
+        }*/
 
         // Selecionar o time escolhido
         cursorTime = bd.rawQuery("SELECT * FROM times WHERE id='"+timeSelecionado+"'",null);
@@ -67,6 +71,7 @@ public class escalacao extends AppCompatActivity {
         // Carregar recycler view jogadores do time
         listaJogadores = findViewById(R.id.rvListaJogadores);
 
+        // Armazenar jogadores em um list
         cursorJogadores = bd.rawQuery("SELECT * FROM jogadores WHERE id_time='"+timeSelecionado+"'",null);
         cursorJogadores.moveToFirst();
         if(cursorJogadores.moveToFirst()){
@@ -84,14 +89,16 @@ public class escalacao extends AppCompatActivity {
                 jogadores.add(jogador);
             } while (cursorJogadores.moveToNext());
         }
-        adapterEscalacao adapter = new adapterEscalacao(jogadores,dados.getInt("numeroRodadas"));
+
+        // Criar adapter para jogadores, passando como parâmetro número de rodadas para cálculo de suas estatíscas
+        adapter = new adapterEscalacao(jogadores,dados.getInt("numeroRodadas"));
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         listaJogadores.setLayoutManager(layoutManager);
         listaJogadores.setHasFixedSize(true);
         listaJogadores.addItemDecoration(new DividerItemDecoration(this, LinearLayout.VERTICAL));
         listaJogadores.setAdapter(adapter);
 
-        // Adicionando eventos de clique a partir de classe já estabelecida
+        // Ao clicar no jogador, vai para sua edição
             listaJogadores.addOnItemTouchListener(
                     new RecyclerItemClickListener(
                             getApplicationContext(), listaJogadores, new RecyclerItemClickListener.OnItemClickListener() {
@@ -114,14 +121,66 @@ public class escalacao extends AppCompatActivity {
                     )
             );
 
+            duvida.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Toast.makeText(getApplicationContext(),"Selecione o jogador para editar seus dados",Toast.LENGTH_SHORT).show();
+                }
+            });
+
     }
 
+    // Inicia uma nova activity que ao ser finalizada, retorna o resultado para esta activity
     public void editarJogador(View view, int idJogador){
-        Intent novaIntent = new Intent(this, editar_jogador.class);
-        novaIntent.putExtra("idJogador",idJogador);
-        novaIntent.putExtra("idTime",dados.getInt("idTime"));
-        novaIntent.putExtra("numeroRodadas",dados.getInt("numeroRodadas"));
-        startActivity(novaIntent);
+        Intent intent = new Intent(this, editar_jogador.class);
+        intent.putExtra("idTime", dados.getInt("idTime"));
+        intent.putExtra("numeroRodadas",dados.getInt("numeroRodadas"));
+        intent.putExtra("idJogador",idJogador);
+        startActivityForResult(intent, 1);
+    }
+
+    // Recebe os parametros da activity de edição de jogador, para que possa mostrar uma mensagem caso jogador tenha sido editado
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == RESULT_OK) {
+                if (data.getIntExtra("edicaoJogador", 0) == 1) {
+                    Toast.makeText(getApplicationContext(),"Jogador editado com sucesso!",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        finish();
+    }
+
+    // Limpa o list de jogadores e insere novamente atualizado
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cursorJogadores = bd.rawQuery("SELECT * FROM jogadores WHERE id_time='"+ dados.getInt("idTime")+"'",null);
+        cursorJogadores.moveToFirst();
+        jogadores.clear();
+        if(cursorJogadores.moveToFirst()){
+            do{
+                Jogadores jogador = new Jogadores();
+                jogador.setId(cursorJogadores.getInt(cursorJogadores.getColumnIndex("id")));
+                jogador.setIdade(cursorJogadores.getInt(cursorJogadores.getColumnIndex("idade")));
+                jogador.setNome(cursorJogadores.getString(cursorJogadores.getColumnIndex("nome")));
+                jogador.setNacionalidade(cursorJogadores.getString(cursorJogadores.getColumnIndex("nacionalidade")));
+                jogador.setPosicao(cursorJogadores.getString(cursorJogadores.getColumnIndex("posicao")));
+                jogador.setGols(cursorJogadores.getInt(cursorJogadores.getColumnIndex("gols")));
+                jogador.setAssistencia(cursorJogadores.getInt(cursorJogadores.getColumnIndex("assistencia")));
+                jogador.setCA(cursorJogadores.getInt(cursorJogadores.getColumnIndex("CA")));
+                jogador.setCV(cursorJogadores.getInt(cursorJogadores.getColumnIndex("CV")));
+                jogadores.add(jogador);
+            } while (cursorJogadores.moveToNext());
+        }
+        adapter.notifyDataSetChanged();
     }
 
     public void carregarEscudo(){

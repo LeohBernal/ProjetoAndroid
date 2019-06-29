@@ -21,14 +21,14 @@ public class editar_time extends AppCompatActivity {
     private Cursor cursorTime;
     private ImageView escudo, plusVit, plusDerrota, plusEmpate, minusVit, minusDerrota, minusEmpate, save, cancel;
     private TextView vitoria, empate, derrota;
-    private int totalVitDerrotaEmpate, timeSelecionado;
+    private int edicaoTime, timeSelecionado;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editar_time);
         intent = getIntent();
         dados = intent.getExtras();
-        bd = openOrCreateDatabase("banco10",MODE_PRIVATE,null);
+        bd = openOrCreateDatabase("banco",MODE_PRIVATE,null);
 
         // Receber extras da intent
         intent = getIntent();
@@ -36,7 +36,9 @@ public class editar_time extends AppCompatActivity {
         timeSelecionado = dados.getInt("idTime");
         numeroRodadas = dados.getInt("numeroRodadas");
 
-        // Setar os TV e IV
+        edicaoTime = 0;
+
+        // Relaciona os componentes
         plusVit = findViewById(R.id.ivPlusVit);
         plusDerrota = findViewById(R.id.ivPlusDerrota);
         plusEmpate = findViewById(R.id.ivPlusEmpate);
@@ -66,42 +68,37 @@ public class editar_time extends AppCompatActivity {
         derrota.setText(""+cursorTime.getInt(cursorTime.getColumnIndex("derrota")));
         empate.setText(""+cursorTime.getInt(cursorTime.getColumnIndex("empate")));
 
-
+        // Incrementa ou decrementa vitórias, derrotas, empates
         plusVit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 incrementarTV(1);
             }
         });
-
         plusDerrota.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 incrementarTV(2);
             }
         });
-
         plusEmpate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 incrementarTV(3);
             }
         });
-
         minusVit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 decrementarTV(1);
             }
         });
-
         minusDerrota.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 decrementarTV(2);
             }
         });
-
         minusEmpate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,6 +106,7 @@ public class editar_time extends AppCompatActivity {
             }
         });
 
+        // Salva os dados da equipe caso o número de vit + emp + derrota seja igual número de rodadas
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -125,6 +123,7 @@ public class editar_time extends AppCompatActivity {
             }
         });
 
+        // Apenas volta para activity anterior
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -180,12 +179,20 @@ public class editar_time extends AppCompatActivity {
 
     }
 
+    // Envia o parâmetro que indica se o time foi ou não editado
     public void voltarTimes(View v, int check){
-        Intent intent = new Intent(this,inicio_jogo.class);
+        Intent intent = new Intent(this, estatiscas_times.class);
         intent.putExtra("numeroRodadas",numeroRodadas);
         if(check == 1)
             intent.putExtra("edicaoTime",1);
-        startActivity(intent);
+        setResult(RESULT_OK, intent);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
         finish();
     }
 

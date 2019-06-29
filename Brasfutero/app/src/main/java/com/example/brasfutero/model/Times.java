@@ -6,14 +6,12 @@ public class Times {
     private String nome;
     private String tecnico;
     private int id;
-    private int escudo;
     private int vitoria, derrota, empate;
 
-    public Times(String nome, String tecnico, int id, int escudo, int vitoria, int derrota, int empate) {
+    public Times(String nome, String tecnico, int id, int vitoria, int derrota, int empate) {
         this.nome = nome;
         this.tecnico = tecnico;
         this.id = id;
-        this.escudo = escudo;
         this.vitoria = vitoria;
         this.derrota = derrota;
         this.empate = empate;

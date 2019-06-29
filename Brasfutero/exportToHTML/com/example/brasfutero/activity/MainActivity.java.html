@@ -1,0 +1,202 @@
+<html>
+<head>
+<title>MainActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6a8759;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MainActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.brasfutero.activity</span><span class="s0">;</span>
+
+import <span class="s1">android.content.Intent</span><span class="s0">;</span>
+import <span class="s1">android.database.Cursor</span><span class="s0">;</span>
+import <span class="s1">android.database.sqlite.SQLiteDatabase</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.app.AppCompatActivity</span><span class="s0">;</span>
+import <span class="s1">android.os.Bundle</span><span class="s0">;</span>
+import <span class="s1">android.view.View</span><span class="s0">;</span>
+import <span class="s1">android.widget.Button</span><span class="s0">;</span>
+import <span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+import <span class="s1">android.widget.TextView</span><span class="s0">;</span>
+import <span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+import <span class="s1">com.example.brasfutero.R</span><span class="s0">;</span>
+
+public class <span class="s1">MainActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+    <span class="s0">private </span><span class="s1">SQLiteDatabase bd</span><span class="s0">;</span>
+    private <span class="s1">Button rodada</span><span class="s0">;</span>
+    private <span class="s1">TextView numRodadas</span><span class="s0">;</span>
+    private <span class="s1">Cursor cursorRodadas</span><span class="s0">;</span>
+    private <span class="s1">ImageView save</span><span class="s0">, </span><span class="s1">plus</span><span class="s0">, </span><span class="s1">minus</span><span class="s0">, </span><span class="s1">duvida</span><span class="s0">;</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_main)</span><span class="s0">;</span>
+
+
+        <span class="s2">// Tratamento do banco</span>
+        <span class="s1">bd = openOrCreateDatabase(</span><span class="s3">&quot;banco&quot;</span><span class="s0">,</span><span class="s1">MODE_PRIVATE</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;CREATE TABLE IF NOT EXISTS times(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, tecnico VARCHAR, vitoria INTEGER, derrota INTEGER, empate INTEGER)&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;CREATE TABLE IF NOT EXISTS jogadores(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, id_time INTEGER, idade INTEGER, posicao VARCHAR, nacionalidade VARCHAR, gols INTEGER, assistencia INTEGER, CA INTEGER, CV INTEGER, FOREIGN KEY (id_time) REFERENCES times(id))&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;CREATE TABLE IF NOT EXISTS rodadas(id INTEGER PRIMARY KEY AUTOINCREMENT, rodada INTEGER)&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+
+
+        <span class="s2">// Verifica se já existem os times, jogadores e o numero de rodadas, caso contrário insere</span>
+        <span class="s1">Cursor cursorTimes = bd.rawQuery(</span><span class="s3">&quot;SELECT * FROM times&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">Cursor cursorJogadores = bd.rawQuery(</span><span class="s3">&quot;SELECT * FROM jogadores&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorRodadas = bd.rawQuery(</span><span class="s3">&quot;SELECT * FROM rodadas&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        if<span class="s1">(!cursorTimes.moveToFirst())</span>
+            criarTimes()<span class="s0">;</span>
+        if<span class="s1">(!cursorJogadores.moveToFirst())</span>
+            criarJogadores()<span class="s0">;</span>
+        if<span class="s1">(!cursorRodadas.moveToFirst())</span>
+            bd.execSQL(<span class="s3">&quot;INSERT INTO rodadas(rodada) VALUES ('0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+
+        <span class="s2">// Relaciona os componentes</span>
+        <span class="s1">save = findViewById(R.id.ivSaveNumRod)</span><span class="s0">;</span>
+        <span class="s1">plus = findViewById(R.id.ivPlusRodada)</span><span class="s0">;</span>
+        <span class="s1">minus = findViewById(R.id.ivMinusRodada)</span><span class="s0">;</span>
+        <span class="s1">numRodadas = findViewById(R.id.tvNumRodadaMain)</span><span class="s0">;</span>
+        <span class="s1">duvida = findViewById(R.id.ivDuvida)</span><span class="s0">;</span>
+
+        <span class="s2">// Insere o número de rodadas presente no banco</span>
+        <span class="s1">cursorRodadas = bd.rawQuery(</span><span class="s3">&quot;SELECT * FROM rodadas&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorRodadas.moveToFirst()</span><span class="s0">;</span>
+        <span class="s1">numRodadas.setText(</span><span class="s3">&quot;&quot;</span><span class="s1">+cursorRodadas.getInt(cursorRodadas.getColumnIndex(</span><span class="s3">&quot;rodada&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+
+
+        <span class="s2">// Incrementa ou decrementa o número de rodadas</span>
+        <span class="s1">plus.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                numRodadas(<span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">minus.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                numRodadas(<span class="s4">2</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+
+        <span class="s2">// Atualiza o número de rodadas no banco</span>
+        <span class="s1">save.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s0">int </span><span class="s1">numeroRodadasInteiro = Integer.parseInt(numRodadas.getText().toString())</span><span class="s0">;</span>
+                <span class="s1">bd.execSQL(</span><span class="s3">&quot;UPDATE rodadas SET rodada = '&quot;</span><span class="s1">+numeroRodadasInteiro+</span><span class="s3">&quot;'&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">Toast.makeText(getApplicationContext()</span><span class="s0">,</span><span class="s3">&quot;Número de rodadas atualizado!&quot;</span><span class="s0">,</span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+
+        <span class="s2">// Mostra toast para esclarecer dúvidas</span>
+        <span class="s1">duvida.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                Toast.makeText(getApplicationContext()<span class="s0">,</span><span class="s3">&quot;Selecione a imagem do disquete para atualizar o número de rodadas&quot;</span><span class="s0">,</span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s2">// Ao clicar no botão estatísca inicia a tela de estatiscas dos times, passando como parametro o número de rodadas</span>
+    <span class="s0">public void </span><span class="s1">novoJogo(View view){</span>
+        Intent intent = <span class="s0">new </span><span class="s1">Intent(</span><span class="s0">this, </span><span class="s1">estatiscas_times.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorRodadas = bd.rawQuery(</span><span class="s3">&quot;SELECT * FROM rodadas&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorRodadas.moveToFirst()</span><span class="s0">;</span>
+        <span class="s1">intent.putExtra(</span><span class="s3">&quot;numeroRodadas&quot;</span><span class="s0">,</span><span class="s1">cursorRodadas.getInt(cursorRodadas.getColumnIndex(</span><span class="s3">&quot;rodada&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">startActivity(intent)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">numRodadas(</span><span class="s0">int </span><span class="s1">check){</span>
+        <span class="s0">int </span><span class="s1">numeroRodadasInteiro</span><span class="s0">;</span>
+        <span class="s1">numeroRodadasInteiro = Integer.parseInt(numRodadas.getText().toString())</span><span class="s0">;</span>
+        if<span class="s1">(check == </span><span class="s4">1</span><span class="s1">){</span>
+            <span class="s0">if</span><span class="s1">(numeroRodadasInteiro &lt; </span><span class="s4">38</span><span class="s1">) {</span>
+                numeroRodadasInteiro++<span class="s0">;</span>
+                <span class="s1">numRodadas.setText(numeroRodadasInteiro+</span><span class="s3">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        } <span class="s0">else if </span><span class="s1">(check == </span><span class="s4">2</span><span class="s1">){</span>
+            <span class="s0">if</span><span class="s1">(numeroRodadasInteiro &gt; </span><span class="s4">0</span><span class="s1">) {</span>
+                numeroRodadasInteiro--<span class="s0">;</span>
+                <span class="s1">numRodadas.setText(numeroRodadasInteiro+</span><span class="s3">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        }
+    }
+
+    @Override
+    <span class="s0">public void </span><span class="s1">onBackPressed()</span>
+    {
+        <span class="s0">super</span><span class="s1">.onBackPressed()</span><span class="s0">;</span>
+        <span class="s1">finish()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+    
+    <span class="s0">public void </span><span class="s1">criarTimes(){</span>
+        bd.execSQL(<span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Santos','Sampaolli','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Palmeiras','Felipão','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Corinthians','Carille','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('São Paulo','Cuca','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Flamengo','Jorge Jesus','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Fluminense','Fernando Diniz','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Vasco','Luxemburgo','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Botafogo','Eduardo Barroca ','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Cruzeiro','Mano Menezes','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Atlético-MG','Rodrigo Santana','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Internacional','Odair Hellmann','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Grêmio','Renato Gaúcho','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Bahia','Roger Machado','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Ceará','Enderson Moreira','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Fortaleza','Rogério Ceni','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Athtletico-PR','Tiago Nunes','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Goiás','Claudinei Oliveira','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Chapecoense','Ney Franco','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('Avaí','Geninho','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO times(nome,tecnico,vitoria,derrota,empate) VALUES ('CSA','Marcelo Cabo','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">criarJogadores(){</span>
+        <span class="s2">// Santos</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Everson','1','28','GOL','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Lucas Verissimo','1','23','ZAG','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Felipe Aguilar','1','26','ZAG','Colombiano','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Victor Ferraz','1','31','LAT','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Jorge','1','23','LAT','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Alison','1','26','MEI','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Diego Pituca','1','26','MEI','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Jean Motta','1','25','MEI','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Marinho','1','29','ATA','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Sasha','1','27','ATA','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">bd.execSQL(</span><span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Soteldo','1','21','ATA','Venezuelano','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s2">// Resto</span>
+        <span class="s0">for</span><span class="s1">(</span><span class="s0">int </span><span class="s1">i=</span><span class="s4">2</span><span class="s0">;</span><span class="s1">i&lt;=</span><span class="s4">20</span><span class="s0">;</span><span class="s1">i++){</span>
+            <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">j=</span><span class="s4">0</span><span class="s0">;</span><span class="s1">j&lt;</span><span class="s4">11</span><span class="s0">;</span><span class="s1">j++){</span>
+                bd.execSQL(<span class="s3">&quot;INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Jogador &quot;</span><span class="s1">+(j+</span><span class="s4">1</span><span class="s1">)+</span><span class="s3">&quot;','&quot;</span><span class="s1">+i+</span><span class="s3">&quot;','20','GOL','Brasileiro','0','0','0','0')&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        }
+
+
+    }
+
+    @Override
+    <span class="s0">protected void </span><span class="s1">onResume() {</span>
+        <span class="s0">super</span><span class="s1">.onResume()</span><span class="s0">;</span>
+        <span class="s1">cursorRodadas = bd.rawQuery(</span><span class="s3">&quot;SELECT * FROM rodadas&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorRodadas.moveToFirst()</span><span class="s0">;</span>
+        <span class="s1">numRodadas.setText(</span><span class="s3">&quot;&quot;</span><span class="s1">+cursorRodadas.getInt(cursorRodadas.getColumnIndex(</span><span class="s3">&quot;rodada&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+}</pre>
+</body>
+</html>

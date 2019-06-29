@@ -35,11 +35,17 @@ public class adapterEscalacao extends RecyclerView.Adapter<adapterEscalacao.MyVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder myViewHolder, int i) {
         double mediaGols, mediaAssist, mediaCA, mediaCV;
-        System.out.println("NUMERO DE RODADAS: "+numeroRodadas);
-        mediaGols = (double) listaJogadores.get(i).getGols()/ (double) numeroRodadas;
-        mediaAssist = (double) listaJogadores.get(i).getAssistencia() / (double) numeroRodadas;
-        mediaCA = (double) listaJogadores.get(i).getCA() / (double) numeroRodadas;
-        mediaCV = (double) listaJogadores.get(i).getCV() / (double) numeroRodadas;
+        if(numeroRodadas != 0) {
+            mediaGols = (double) listaJogadores.get(i).getGols() / (double) numeroRodadas;
+            mediaAssist = (double) listaJogadores.get(i).getAssistencia() / (double) numeroRodadas;
+            mediaCA = (double) listaJogadores.get(i).getCA() / (double) numeroRodadas;
+            mediaCV = (double) listaJogadores.get(i).getCV() / (double) numeroRodadas;
+        } else {
+            mediaGols = 0;
+            mediaAssist = 0;
+            mediaCA = 0;
+            mediaCV = 0;
+        }
         myViewHolder.nome.setText(listaJogadores.get(i).getNome());
         myViewHolder.posicao.setText(listaJogadores.get(i).getPosicao());
         myViewHolder.nacionalidade.setText(listaJogadores.get(i).getNacionalidade());

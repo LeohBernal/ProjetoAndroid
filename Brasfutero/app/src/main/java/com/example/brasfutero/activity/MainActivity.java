@@ -7,33 +7,36 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.brasfutero.R;
 
-import java.sql.SQLOutput;
-
 public class MainActivity extends AppCompatActivity {
     private SQLiteDatabase bd;
     private Button rodada;
     private TextView numRodadas;
     private Cursor cursorRodadas;
-    private ImageView save, plus, minus;
+    private ImageView save, plus, minus, duvida;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bd = openOrCreateDatabase("banco10",MODE_PRIVATE,null);
+
+
+        // Tratamento do banco
+        bd = openOrCreateDatabase("banco",MODE_PRIVATE,null);
         bd.execSQL("CREATE TABLE IF NOT EXISTS times(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, tecnico VARCHAR, vitoria INTEGER, derrota INTEGER, empate INTEGER)");
         bd.execSQL("CREATE TABLE IF NOT EXISTS jogadores(id INTEGER PRIMARY KEY AUTOINCREMENT, nome VARCHAR, id_time INTEGER, idade INTEGER, posicao VARCHAR, nacionalidade VARCHAR, gols INTEGER, assistencia INTEGER, CA INTEGER, CV INTEGER, FOREIGN KEY (id_time) REFERENCES times(id))");
         bd.execSQL("CREATE TABLE IF NOT EXISTS rodadas(id INTEGER PRIMARY KEY AUTOINCREMENT, rodada INTEGER)");
-        cursorRodadas = bd.rawQuery("SELECT * FROM rodadas",null);
+
+
+
+        // Verifica se já existem os times, jogadores e o numero de rodadas, caso contrário insere
         Cursor cursorTimes = bd.rawQuery("SELECT * FROM times",null);
         Cursor cursorJogadores = bd.rawQuery("SELECT * FROM jogadores",null);
-
+        cursorRodadas = bd.rawQuery("SELECT * FROM rodadas",null);
         if(!cursorTimes.moveToFirst())
             criarTimes();
         if(!cursorJogadores.moveToFirst())
@@ -41,22 +44,27 @@ public class MainActivity extends AppCompatActivity {
         if(!cursorRodadas.moveToFirst())
             bd.execSQL("INSERT INTO rodadas(rodada) VALUES ('0')");
 
-        cursorRodadas.moveToFirst();
 
+        // Relaciona os componentes
         save = findViewById(R.id.ivSaveNumRod);
         plus = findViewById(R.id.ivPlusRodada);
         minus = findViewById(R.id.ivMinusRodada);
-        numRodadas = findViewById(R.id.tvNumRodada);
+        numRodadas = findViewById(R.id.tvNumRodadaMain);
+        duvida = findViewById(R.id.ivDuvida);
 
+        // Insere o número de rodadas presente no banco
+        cursorRodadas = bd.rawQuery("SELECT * FROM rodadas",null);
+        cursorRodadas.moveToFirst();
         numRodadas.setText(""+cursorRodadas.getInt(cursorRodadas.getColumnIndex("rodada")));
 
+
+        // Incrementa ou decrementa o número de rodadas
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 numRodadas(1);
             }
         });
-
         minus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -64,6 +72,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Atualiza o número de rodadas no banco
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -73,10 +82,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Mostra toast para esclarecer dúvidas
+        duvida.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(getApplicationContext(),"Selecione a imagem do disquete para atualizar o número de rodadas",Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
+    // Ao clicar no botão estatísca inicia a tela de estatiscas dos times, passando como parametro o número de rodadas
     public void novoJogo(View view){
-        Intent intent = new Intent(this, inicio_jogo.class);
+        Intent intent = new Intent(this, estatiscas_times.class);
+        cursorRodadas = bd.rawQuery("SELECT * FROM rodadas",null);
         cursorRodadas.moveToFirst();
         intent.putExtra("numeroRodadas",cursorRodadas.getInt(cursorRodadas.getColumnIndex("rodada")));
         startActivity(intent);
@@ -101,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed()
     {
+        super.onBackPressed();
         finish();
     }
     
@@ -141,18 +161,22 @@ public class MainActivity extends AppCompatActivity {
         bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Sasha','1','27','ATA','Brasileiro','0','0','0','0')");
         bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Soteldo','1','21','ATA','Venezuelano','0','0','0','0')");
 
-        // Palmeiras
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Weverton','2','20','GOL','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Antônio Carlos','2','20','ZAG','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Edu Dracena','2','20','ZAG','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Diego Barbosa','2','20','LAT','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Marcos Rocha','2','20','LAT','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Bruno Henrique','2','20','MEI','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Felipe Melo','2','20','MEI','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Lucas Lima','2','20','MEI','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Zé Rafael','2','20','ATA','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Dudu','2','20','ATA','Brasileiro','0','0','0','0')");
-        bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Deyverson','2','20','ATA','Brasileiro','0','0','0','0')");
+        // Resto
+        for(int i=2;i<=20;i++){
+            for (int j=0;j<11;j++){
+                bd.execSQL("INSERT INTO Jogadores(nome,id_time,idade,posicao,nacionalidade,gols,assistencia,CA,CV) VALUES ('Jogador "+(j+1)+"','"+i+"','20','GOL','Brasileiro','0','0','0','0')");
+            }
+        }
+
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cursorRodadas = bd.rawQuery("SELECT * FROM rodadas",null);
+        cursorRodadas.moveToFirst();
+        numRodadas.setText(""+cursorRodadas.getInt(cursorRodadas.getColumnIndex("rodada")));
     }
 
 }

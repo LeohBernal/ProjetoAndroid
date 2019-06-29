@@ -1,0 +1,287 @@
+<html>
+<head>
+<title>editar_time.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+editar_time.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.example.brasfutero.activity</span><span class="s0">;</span>
+
+import <span class="s1">android.content.Intent</span><span class="s0">;</span>
+import <span class="s1">android.database.Cursor</span><span class="s0">;</span>
+import <span class="s1">android.database.sqlite.SQLiteDatabase</span><span class="s0">;</span>
+import <span class="s1">android.support.v7.app.AppCompatActivity</span><span class="s0">;</span>
+import <span class="s1">android.os.Bundle</span><span class="s0">;</span>
+import <span class="s1">android.view.View</span><span class="s0">;</span>
+import <span class="s1">android.widget.ImageView</span><span class="s0">;</span>
+import <span class="s1">android.widget.TextView</span><span class="s0">;</span>
+import <span class="s1">android.widget.Toast</span><span class="s0">;</span>
+
+import <span class="s1">com.example.brasfutero.R</span><span class="s0">;</span>
+import <span class="s1">com.example.brasfutero.model.Times</span><span class="s0">;</span>
+
+public class <span class="s1">editar_time </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+    <span class="s0">private </span><span class="s1">Intent intent</span><span class="s0">;</span>
+    private <span class="s1">Bundle dados</span><span class="s0">;</span>
+    private int <span class="s1">numeroRodadas</span><span class="s0">;</span>
+    private <span class="s1">SQLiteDatabase bd</span><span class="s0">;</span>
+    private <span class="s1">Cursor cursorTime</span><span class="s0">;</span>
+    private <span class="s1">ImageView escudo</span><span class="s0">, </span><span class="s1">plusVit</span><span class="s0">, </span><span class="s1">plusDerrota</span><span class="s0">, </span><span class="s1">plusEmpate</span><span class="s0">, </span><span class="s1">minusVit</span><span class="s0">, </span><span class="s1">minusDerrota</span><span class="s0">, </span><span class="s1">minusEmpate</span><span class="s0">, </span><span class="s1">save</span><span class="s0">, </span><span class="s1">cancel</span><span class="s0">;</span>
+    private <span class="s1">TextView vitoria</span><span class="s0">, </span><span class="s1">empate</span><span class="s0">, </span><span class="s1">derrota</span><span class="s0">;</span>
+    private int <span class="s1">edicaoTime</span><span class="s0">, </span><span class="s1">timeSelecionado</span><span class="s0">;</span>
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.activity_editar_time)</span><span class="s0">;</span>
+        <span class="s1">intent = getIntent()</span><span class="s0">;</span>
+        <span class="s1">dados = intent.getExtras()</span><span class="s0">;</span>
+        <span class="s1">bd = openOrCreateDatabase(</span><span class="s2">&quot;banco&quot;</span><span class="s0">,</span><span class="s1">MODE_PRIVATE</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s3">// Receber extras da intent</span>
+        <span class="s1">intent = getIntent()</span><span class="s0">;</span>
+        <span class="s1">dados = intent.getExtras()</span><span class="s0">;</span>
+        <span class="s1">timeSelecionado = dados.getInt(</span><span class="s2">&quot;idTime&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">numeroRodadas = dados.getInt(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+        <span class="s1">edicaoTime = </span><span class="s4">0</span><span class="s0">;</span>
+
+        <span class="s3">// Relaciona os componentes</span>
+        <span class="s1">plusVit = findViewById(R.id.ivPlusVit)</span><span class="s0">;</span>
+        <span class="s1">plusDerrota = findViewById(R.id.ivPlusDerrota)</span><span class="s0">;</span>
+        <span class="s1">plusEmpate = findViewById(R.id.ivPlusEmpate)</span><span class="s0">;</span>
+        <span class="s1">minusVit = findViewById(R.id.ivMinusVit)</span><span class="s0">;</span>
+        <span class="s1">minusDerrota = findViewById(R.id.ivMInusDerrota)</span><span class="s0">;</span>
+        <span class="s1">minusEmpate = findViewById(R.id.ivMinusEmpate)</span><span class="s0">;</span>
+        <span class="s1">vitoria = findViewById(R.id.tvEdicNumAssist)</span><span class="s0">;</span>
+        <span class="s1">derrota = findViewById(R.id.tvEdicNumCA)</span><span class="s0">;</span>
+        <span class="s1">empate = findViewById(R.id.tvEdicNumCV)</span><span class="s0">;</span>
+        <span class="s1">save = findViewById(R.id.ivSalvarTIme)</span><span class="s0">;</span>
+        <span class="s1">cancel = findViewById(R.id.ivCancelarJogador)</span><span class="s0">;</span>
+
+        <span class="s3">// Selecionar o time escolhido</span>
+        <span class="s1">cursorTime = bd.rawQuery(</span><span class="s2">&quot;SELECT * FROM times WHERE id='&quot;</span><span class="s1">+timeSelecionado+</span><span class="s2">&quot;'&quot;</span><span class="s0">,null</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">cursorTime.moveToFirst()</span><span class="s0">;</span>
+        <span class="s1">Times time = </span><span class="s0">new </span><span class="s1">Times()</span><span class="s0">;</span>
+        <span class="s1">time.setId(cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;id&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">time.setNome(cursorTime.getString(cursorTime.getColumnIndex(</span><span class="s2">&quot;nome&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">time.setTecnico(cursorTime.getString(cursorTime.getColumnIndex(</span><span class="s2">&quot;tecnico&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">time.setVitoria(cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;vitoria&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">time.setDerrota(cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;derrota&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">time.setEmpate(cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;empate&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">carregarEscudo()</span><span class="s0">;</span>
+
+        <span class="s3">// Setar número de vit, emp, der</span>
+        <span class="s1">vitoria.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;vitoria&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">derrota.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;derrota&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+        <span class="s1">empate.setText(</span><span class="s2">&quot;&quot;</span><span class="s1">+cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;empate&quot;</span><span class="s1">)))</span><span class="s0">;</span>
+
+        <span class="s3">// Incrementa ou decrementa vitórias, derrotas, empates</span>
+        <span class="s1">plusVit.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                incrementarTV(<span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">plusDerrota.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                incrementarTV(<span class="s4">2</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">plusEmpate.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                incrementarTV(<span class="s4">3</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">minusVit.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                decrementarTV(<span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">minusDerrota.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                decrementarTV(<span class="s4">2</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+        <span class="s1">minusEmpate.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                decrementarTV(<span class="s4">3</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+
+        <span class="s3">// Salva os dados da equipe caso o número de vit + emp + derrota seja igual número de rodadas</span>
+        <span class="s1">save.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s0">int </span><span class="s1">vit</span><span class="s0">, </span><span class="s1">der</span><span class="s0">, </span><span class="s1">emp</span><span class="s0">;</span>
+                <span class="s1">vit = Integer.parseInt(vitoria.getText().toString())</span><span class="s0">;</span>
+                <span class="s1">der = Integer.parseInt(derrota.getText().toString())</span><span class="s0">;</span>
+                <span class="s1">emp = Integer.parseInt(empate.getText().toString())</span><span class="s0">;</span>
+                if<span class="s1">(vit+der+emp == numeroRodadas){</span>
+                    bd.execSQL(<span class="s2">&quot;UPDATE times SET vitoria = '&quot;</span><span class="s1">+vit+</span><span class="s2">&quot;', derrota = '&quot;</span><span class="s1">+der+</span><span class="s2">&quot;', empate = '&quot;</span><span class="s1">+emp+</span><span class="s2">&quot;' WHERE id = '&quot;</span><span class="s1">+timeSelecionado+</span><span class="s2">&quot;'&quot;</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s1">voltarTimes(v</span><span class="s0">,</span><span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">} </span><span class="s0">else </span><span class="s1">{</span>
+                    Toast.makeText(getApplicationContext()<span class="s0">,</span><span class="s2">&quot;Número de vitóras + empates + derrotas deve ser igual o número de rodadas (&quot;</span><span class="s1">+numeroRodadas+</span><span class="s2">&quot;)!&quot;</span><span class="s0">,</span><span class="s1">Toast.LENGTH_SHORT).show()</span><span class="s0">;</span>
+                <span class="s1">}</span>
+            }
+        })<span class="s0">;</span>
+
+        <span class="s3">// Apenas volta para activity anterior</span>
+        <span class="s1">cancel.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            @Override
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                voltarTimes(v<span class="s0">,</span><span class="s4">0</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        })<span class="s0">;</span>
+
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">incrementarTV(</span><span class="s0">int </span><span class="s1">campo){</span>
+        <span class="s0">int </span><span class="s1">vit</span><span class="s0">, </span><span class="s1">der</span><span class="s0">, </span><span class="s1">emp</span><span class="s0">;</span>
+        <span class="s1">vit = Integer.parseInt(vitoria.getText().toString())</span><span class="s0">;</span>
+        <span class="s1">der = Integer.parseInt(derrota.getText().toString())</span><span class="s0">;</span>
+        <span class="s1">emp = Integer.parseInt(empate.getText().toString())</span><span class="s0">;</span>
+        if<span class="s1">(vit+der+emp &lt; numeroRodadas){</span>
+            <span class="s0">int </span><span class="s1">valorCampo = </span><span class="s4">0</span><span class="s0">;</span>
+            if<span class="s1">(campo == </span><span class="s4">1</span><span class="s1">) {</span>
+                valorCampo = Integer.parseInt(vitoria.getText().toString())<span class="s0">;</span>
+                <span class="s1">valorCampo++</span><span class="s0">;</span>
+                <span class="s1">vitoria.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">2</span><span class="s1">){</span>
+                valorCampo = Integer.parseInt(derrota.getText().toString())<span class="s0">;</span>
+                <span class="s1">valorCampo++</span><span class="s0">;</span>
+                <span class="s1">derrota.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">3</span><span class="s1">){</span>
+                valorCampo = Integer.parseInt(empate.getText().toString())<span class="s0">;</span>
+                <span class="s1">valorCampo++</span><span class="s0">;</span>
+                <span class="s1">empate.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+
+        }
+    }
+
+    <span class="s0">public void </span><span class="s1">decrementarTV(</span><span class="s0">int </span><span class="s1">campo){</span>
+        <span class="s0">int </span><span class="s1">vit</span><span class="s0">, </span><span class="s1">der</span><span class="s0">, </span><span class="s1">emp</span><span class="s0">;</span>
+        <span class="s1">vit = Integer.parseInt(vitoria.getText().toString())</span><span class="s0">;</span>
+        <span class="s1">der = Integer.parseInt(derrota.getText().toString())</span><span class="s0">;</span>
+        <span class="s1">emp = Integer.parseInt(empate.getText().toString())</span><span class="s0">;</span>
+            int <span class="s1">valorCampo = </span><span class="s4">0</span><span class="s0">;</span>
+            if<span class="s1">(campo == </span><span class="s4">1 </span><span class="s1">&amp;&amp; vit &gt; </span><span class="s4">0</span><span class="s1">) {</span>
+                valorCampo = Integer.parseInt(vitoria.getText().toString())<span class="s0">;</span>
+                <span class="s1">valorCampo--</span><span class="s0">;</span>
+                <span class="s1">vitoria.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">2 </span><span class="s1">&amp;&amp; der &gt; </span><span class="s4">0</span><span class="s1">){</span>
+                valorCampo = Integer.parseInt(derrota.getText().toString())<span class="s0">;</span>
+                <span class="s1">valorCampo--</span><span class="s0">;</span>
+                <span class="s1">derrota.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">} </span><span class="s0">else if</span><span class="s1">(campo == </span><span class="s4">3 </span><span class="s1">&amp;&amp; emp &gt; </span><span class="s4">0</span><span class="s1">){</span>
+                valorCampo = Integer.parseInt(empate.getText().toString())<span class="s0">;</span>
+                <span class="s1">valorCampo--</span><span class="s0">;</span>
+                <span class="s1">empate.setText(valorCampo+</span><span class="s2">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">}</span>
+
+    }
+
+    <span class="s3">// Envia o parâmetro que indica se o time foi ou não editado</span>
+    <span class="s0">public void </span><span class="s1">voltarTimes(View v</span><span class="s0">, int </span><span class="s1">check){</span>
+        Intent intent = <span class="s0">new </span><span class="s1">Intent(</span><span class="s0">this, </span><span class="s1">estatiscas_times.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">intent.putExtra(</span><span class="s2">&quot;numeroRodadas&quot;</span><span class="s0">,</span><span class="s1">numeroRodadas)</span><span class="s0">;</span>
+        if<span class="s1">(check == </span><span class="s4">1</span><span class="s1">)</span>
+            intent.putExtra(<span class="s2">&quot;edicaoTime&quot;</span><span class="s0">,</span><span class="s4">1</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">setResult(RESULT_OK</span><span class="s0">, </span><span class="s1">intent)</span><span class="s0">;</span>
+        <span class="s1">finish()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    @Override
+    <span class="s0">public void </span><span class="s1">onBackPressed()</span>
+    {
+        <span class="s0">super</span><span class="s1">.onBackPressed()</span><span class="s0">;</span>
+        <span class="s1">finish()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">public void </span><span class="s1">carregarEscudo(){</span>
+        <span class="s0">int </span><span class="s1">id = cursorTime.getInt(cursorTime.getColumnIndex(</span><span class="s2">&quot;id&quot;</span><span class="s1">))</span><span class="s0">;</span>
+        <span class="s1">escudo = findViewById(R.id.ivEscudoTimeEdicao)</span><span class="s0">;</span>
+        switch <span class="s1">(id){</span>
+            <span class="s0">case </span><span class="s4">1</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.santos)<span class="s0">;</span>
+                break;
+            case <span class="s4">2</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.palmeiras)<span class="s0">;</span>
+                break;
+            case <span class="s4">3</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.corinthians)<span class="s0">;</span>
+                break;
+            case <span class="s4">4</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.saopaulo)<span class="s0">;</span>
+                break;
+            case <span class="s4">5</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.flamengo)<span class="s0">;</span>
+                break;
+            case <span class="s4">6</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.fluminense)<span class="s0">;</span>
+                break;
+            case <span class="s4">7</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.vasco)<span class="s0">;</span>
+                break;
+            case <span class="s4">8</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.botafogo)<span class="s0">;</span>
+                break;
+            case <span class="s4">9</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.cruzeiro)<span class="s0">;</span>
+                break;
+            case <span class="s4">10</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.atleticomg)<span class="s0">;</span>
+                break;
+            case <span class="s4">11</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.internacional)<span class="s0">;</span>
+                break;
+            case <span class="s4">12</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.gremio)<span class="s0">;</span>
+                break;
+            case <span class="s4">13</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.bahia)<span class="s0">;</span>
+                break;
+            case <span class="s4">14</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.ceara)<span class="s0">;</span>
+                break;
+            case <span class="s4">15</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.fortaleza)<span class="s0">;</span>
+                break;
+            case <span class="s4">16</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.athleticopr)<span class="s0">;</span>
+                break;
+            case <span class="s4">17</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.goias)<span class="s0">;</span>
+                break;
+            case <span class="s4">18</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.chapecoense)<span class="s0">;</span>
+                break;
+            case <span class="s4">19</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.avai)<span class="s0">;</span>
+                break;
+            case <span class="s4">20</span><span class="s1">:</span>
+                escudo.setImageResource(R.drawable.csa)<span class="s0">;</span>
+                break;
+        <span class="s1">}</span>
+    }
+
+}
+</pre>
+</body>
+</html>
